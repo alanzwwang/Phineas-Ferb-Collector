@@ -184,6 +184,11 @@ p{margin:0 0 8px}
 .card.holo .holo-layer{opacity:.38;animation:holoShift 7s linear infinite}
 @keyframes holoShift{0%{background-position:0% 50%}100%{background-position:220% 50%}}
 .card.secret{box-shadow:0 0 0 1px rgba(246,203,78,.45),0 0 28px -8px rgba(246,203,78,.55),0 14px 30px -22px #000}
+.card.star{box-shadow:0 0 0 1px #ffe9a8,0 0 36px -8px #ffd166,0 14px 30px -22px #000}
+.card.star .p-glow{background:radial-gradient(circle,#ffe9a8,transparent 65%);opacity:.3}
+.starbadge{position:absolute;z-index:3;left:50%;top:5px;transform:translateX(-50%);font-size:7px;font-weight:900;
+  letter-spacing:.08em;color:#3a2600;background:linear-gradient(180deg,#ffe59a,#e0a62a);padding:2px 6px;
+  border-radius:999px;box-shadow:0 4px 12px -4px rgba(224,166,42,.8);white-space:nowrap}
 .card .portrait{position:relative;flex:1;min-height:0;display:grid;place-items:center;padding:4px 3px 0;overflow:hidden;
   background:radial-gradient(75% 62% at 50% 32%,rgba(255,255,255,.08),transparent 72%)}
 .card .p-glow{position:absolute;width:82%;aspect-ratio:1;border-radius:50%;left:50%;top:46%;transform:translate(-50%,-50%);
@@ -295,6 +300,10 @@ body.opening .stats{margin:7px 0 3px}
 .mini{position:relative;border-radius:13px;border:1px solid var(--border);background:linear-gradient(170deg,#111d33,#0a1322);
   overflow:hidden;display:flex;flex-direction:column;box-shadow:0 12px 26px -22px #000}
 .mini.on{border-color:rgba(47,208,198,.7);box-shadow:0 0 0 1px rgba(47,208,198,.3)}
+.mini.star{border-color:#ffd166;box-shadow:0 0 0 1px rgba(255,209,102,.35),0 12px 26px -20px rgba(255,209,102,.7)}
+.mini-star{position:absolute;z-index:3;right:4px;top:4px;width:16px;height:16px;border-radius:50%;
+  background:linear-gradient(180deg,#ffe59a,#e0a62a);color:#3a2600;font-size:9px;display:grid;place-items:center;
+  font-weight:900;box-shadow:0 2px 6px rgba(0,0,0,.4)}
 .mini-art{position:relative;aspect-ratio:1/.86;display:grid;place-items:center;overflow:hidden;
   background:radial-gradient(70% 60% at 50% 35%,rgba(255,255,255,.1),transparent 70%),linear-gradient(180deg,#16243c,#0d1728)}
 .mini-art::after{content:"";position:absolute;inset:0;z-index:0;background:var(--tone);opacity:.15;pointer-events:none}
@@ -316,6 +325,7 @@ body.opening .stats{margin:7px 0 3px}
 .mb.icon{flex:0 0 23px;font-size:10px;padding:5px 0}
 .mb:disabled{opacity:.4;cursor:not-allowed}
 .more-wrap{margin-top:9px}
+.sell-row{display:flex;justify-content:flex-end;margin-top:7px}
 
 /* lab page */
 .machine{position:relative;overflow:hidden;border-color:rgba(183,122,236,.35);
@@ -967,6 +977,63 @@ function packName(p){
 }
 
 /* =========================================================
+   NEW THINGS: one unique new entity per pack (packs 0-98),
+   plus a star-only 1T pack (pack 99).
+   ========================================================= */
+const TONES = ['#6fbf4a','#4fc3f7','#ffb347','#e0556f','#b07be0','#3fa89b','#f0b23a','#9b6ee8','#5a9cec','#ff7ab8','#8fd14f','#ffd166'];
+const UNIQUE_RAW = [
+  ['Grass','🌱'],['Sprinkler Sprite','💦'],['Lemonade Golem','🍋'],['Sandcastle Crab','🦀'],['Boardwalk Pelican','🐦'],
+  ['Firework Comet','☄️'],['Slushy Slime','🥤'],['Robo-Squirrel','🐿️'],['Treehouse Titan','🏡'],['Gnome Guard','🧙'],
+  ['Fedora Drone','🛸'],['Inator Bot','🤖'],['Lab Rat','🐀'],['Backstory Ghost','👻'],['Self-Destruct Sprout','🌿'],
+  ['Platy-Sub','🛥️'],['Portal Wisp','🌀'],['Doof-2 Drone','🛰️'],['Alien Snail','🐌'],['Halloween Scarecrow','🌾'],
+  ['Christmas Yeti','❄️'],['Robo-Reindeer','🦌'],['Cupid Comet','💘'],['Future Cactus','🪴'],['Pirate Parrot','🦜'],
+  ['Cowboy Cactus','🌵'],['Ninja Cat','🐱'],['Monster Blob','👾'],['Glitch Bug','🐛'],['Disco Duck','🦆'],
+  ['Golden Goose','🪿'],['Pizza Comet','🍕'],['Toaster Bot','🔌'],['Sock Puppet','🧦'],['Bubble Blob','🫧'],
+  ['Paper Plane','✈️'],['Pencil Pal','✏️'],['Eraser Buddy','🧽'],['Muffin Meteor','🧁'],['Cactus Kid','🌵'],
+  ['Rubber Duck','🐤'],['Doof Gnome','🧔'],['Lawnmower Golem','🚜'],['Robo-Raccoon','🦝'],['Slime King','👑'],
+  ['Magnet Mouse','🧲'],['Pogo Pumpkin','🎃'],['Bubble Bee','🐝'],['Balloon Bot','🎈'],['Candy Crab','🍬'],
+  ['Tinsel Tiger','🐯'],['Snowman Spy','☃️'],['Heart Hoverbot','💗'],['Jelly Bean Jet','🚀'],['Pirate Puffer','🐡'],
+  ['Cactus Cowboy','🤠'],['Ninja Newt','🦎'],['Vampire Vacuum','🧛'],['Pixel Pigeon','🕊️'],['Disco Ball','🪩'],
+  ['Golden Gopher','🐹'],['Pizza Pixie','🧚'],['Toaster Titan','🍞'],['Sock Snake','🐍'],['Bubble Bunny','🐰'],
+  ['Paper Phoenix','🐦‍🔥'],['Pencil Pixie','🧚‍♀️'],['Eraser Elephant','🐘'],['Muffin Mole','🐭'],['Cactus Cub','🐾'],
+  ['Rubber Raccoon','🦝'],['Gnome Golem','🗿'],['Lawnmower Lynx','🐆'],['Robo-Rooster','🐓'],['Slime Slug','🐌'],
+  ['Magnet Moth','🦋'],['Pogo Penguin','🐧'],['Bubble Bat','🦇'],['Balloon Bunny','🐇'],['Candy Cat','🍭'],
+  ['Tinsel Turkey','🦃'],['Snowman Shark','🦈'],['Heart Hummingbird','💞'],['Jelly Bean Jaguar','🫘'],['Pirate Pug','🐶'],
+  ['Cactus Crab','🌵'],['Ninja Narwhal','🐋'],['Vampire Vulture','🦅'],['Pixel Parrot','🦜'],['Disco Dragon','🐉'],
+  ['Golden Gecko','🪙'],['Pizza Python','🍕'],['Toaster Turtle','🐢'],['Sock Spider','🕷️'],['Bubble Bear','🐻'],
+  ['Paper Pterodactyl','🦖'],['Pencil Porcupine','🦔'],['Eraser Eagle','🦅'],['Mecha Tree Bot','🌳']
+];
+const uniques = [];
+let up = 0;
+for (const [n, sg] of UNIQUE_RAW){
+  if (n === 'Mecha Tree Bot') continue;
+  while (up === 61) up++;
+  uniques.push({n, sg, pack:up});
+  up++;
+}
+uniques.push({n:'Mecha Tree Bot', sg:'🌳', pack:61});
+uniques.sort((a,b) => a.pack - b.pack);
+uniques.forEach((u, i) => {
+  const isGrass = u.n === 'Grass';
+  const isTree = u.n === 'Mecha Tree Bot';
+  const baseIndex = BASES.length;
+  BASES.push({
+    n:u.n, s:u.n,
+    k:isGrass ? 'grass' : isTree ? 'treebot' : 'critter',
+    sg:u.sg, seed:i, tone:hueHex((i * 137.508 + 96) % 360, 62, 55), unique:1,
+    rateMul:isGrass ? 0.5 : 1
+  });
+  const slot = PACKS[u.pack].pool[9];
+  CARDS[slot] = Object.assign({}, CARDS[slot], {b:baseIndex, e:'classic', n:u.n, unique:1});
+});
+const STAR_BASES = [0,1,2,38,6,5,22,7,8,9];
+PACKS[99].pool.forEach((ci, j) => {
+  const b = STAR_BASES[j];
+  CARDS[ci] = Object.assign({}, CARDS[ci], {b, e:'classic', n:BASES[b].s, unique:1, star:1});
+});
+PACKS[99].desc = 'The ten stars of the show: Phineas, Ferb, Candace, Meap, Isabella, Perry, Doofenshmirtz, Baljeet, Buford and Stacy. One card per open.';
+
+/* =========================================================
    RIVALS
    ========================================================= */
 const RIVAL_SEED = [
@@ -1121,6 +1188,14 @@ const CATEGORIES = {
 const HEAD_TOP = {tri:18, rect:22, oval:22, adult:21, platypus:31, platyborg:31, robot:25, alien:28, dog:36, babyhead:30, duo:22};
 const EYE_Y = {tri:49, rect:46, oval:46, adult:46, platypus:43, platyborg:43, robot:44.5, alien:47, dog:52, babyhead:52};
 
+function hueHex(deg, sat, light){
+  const s = sat / 100, l = light / 100;
+  const k = n => (n + deg / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  const to = x => Math.round(255 * x).toString(16).padStart(2, '0');
+  return '#' + to(f(0)) + to(f(8)) + to(f(4));
+}
 function shade(hex, amt){
   const h = hex.replace('#','');
   const full = h.length === 3 ? h.split('').map(x => x + x).join('') : h;
@@ -1371,6 +1446,74 @@ function duo(){
   const fe = {k:'rect', sk:'#f2c39b', hr:'#7fc24a', hs:'flat', sh:'#f4ead6'};
   return `<g transform="translate(5,20) scale(.64)">${humanInner(ph)}</g><g transform="translate(37,20) scale(.64)">${humanInner(fe)}</g>`;
 }
+function grass(a){
+  const g = a.tone || '#6fbf4a';
+  const d = shade(g, -30);
+  return `<path d="M35 97 q0-38 15-53 q15 15 15 53Z" fill="${g}" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>` +
+    `<path d="M36 97 q-10-17 -18-22 q-1 16 10 24Z" fill="${d}" stroke="${INK}" stroke-width="1.8"/>` +
+    `<path d="M64 97 q10-17 18-22 q1 16 -10 24Z" fill="${d}" stroke="${INK}" stroke-width="1.8"/>` +
+    `<path d="M47 47 q-4-17 3-28 q8 11 3 28Z" fill="${d}" stroke="${INK}" stroke-width="1.8"/>` +
+    `<circle cx="45" cy="63" r="4.3" fill="#fff" stroke="${INK}" stroke-width="1.4"/>` +
+    `<circle cx="55" cy="63" r="4.3" fill="#fff" stroke="${INK}" stroke-width="1.4"/>` +
+    `<circle cx="45.8" cy="64" r="1.9" fill="#182033"/><circle cx="55.8" cy="64" r="1.9" fill="#182033"/>` +
+    `<path d="M45 72 q5 5 10 0" stroke="${INK}" stroke-width="2" fill="none" stroke-linecap="round"/>` +
+    `<circle cx="50" cy="31" r="4" fill="#ffd166" stroke="${INK}" stroke-width="1.4"/>`;
+}
+function treebot(a){
+  const metal = '#aebdd0';
+  const dark = '#7f90a8';
+  const leaf = a.tone || '#6fbf4a';
+  return `<rect x="45" y="54" width="10" height="45" rx="3" fill="${metal}" stroke="${INK}" stroke-width="2"/>` +
+    `<path d="M50 56 v-27 M50 41 L30 23 M50 41 L70 23 M50 31 L38 15 M50 31 L62 15" stroke="${metal}" stroke-width="5" stroke-linecap="round"/>` +
+    `<circle cx="30" cy="21" r="8" fill="${leaf}" stroke="${INK}" stroke-width="1.8"/>` +
+    `<circle cx="70" cy="21" r="8" fill="${leaf}" stroke="${INK}" stroke-width="1.8"/>` +
+    `<circle cx="38" cy="13" r="6" fill="${leaf}" stroke="${INK}" stroke-width="1.6"/>` +
+    `<circle cx="62" cy="13" r="6" fill="${leaf}" stroke="${INK}" stroke-width="1.6"/>` +
+    `<rect x="42" y="59" width="16" height="9" rx="4.5" fill="#1b2436"/>` +
+    `<circle cx="46" cy="63.5" r="2.2" fill="#6ff0ff"/><circle cx="54" cy="63.5" r="2.2" fill="#6ff0ff"/>` +
+    `<path d="M45 75 q5 4 10 0" stroke="${INK}" stroke-width="1.8" fill="none" stroke-linecap="round"/>` +
+    `<path d="M50 54 v-9" stroke="${INK}" stroke-width="2"/><circle cx="50" cy="8" r="4" fill="#ff5a5a" stroke="${INK}" stroke-width="1.4"/>` +
+    `<rect x="38" y="96" width="24" height="5" rx="2" fill="${dark}" stroke="${INK}" stroke-width="1.5"/>`;
+}
+function hashStr(s){
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function critter(a){
+  const g = a.tone || '#6fbf4a';
+  const dk = shade(g, -34), lt = shade(g, 42);
+  const h = hashStr((a.n || 'critter') + '|' + (a.seed === undefined ? '' : a.seed));
+  const body = h % 6, top = (h >>> 3) % 5, arm = (h >>> 6) % 3, acc = (h >>> 9) % 5, eye = (h >>> 12) % 4;
+  const shapes = {
+    0: {p:`<ellipse cx="50" cy="68" rx="27" ry="25"/>`, topY:44, eyeY:62, edge:24},
+    1: {p:`<ellipse cx="50" cy="64" rx="23" ry="28"/>`, topY:37, eyeY:58, edge:20},
+    2: {p:`<rect x="37" y="36" width="26" height="61" rx="13"/>`, topY:36, eyeY:56, edge:12},
+    3: {p:`<circle cx="50" cy="61" r="25"/><rect x="40" y="85" width="7" height="12" rx="3.5"/><rect x="53" y="85" width="7" height="12" rx="3.5"/>`, topY:37, eyeY:57, edge:22},
+    4: {p:`<rect x="29" y="42" width="42" height="54" rx="8"/>`, topY:42, eyeY:62, edge:21},
+    5: {p:`<path d="M27 96 V62 a23 23 0 0 1 46 0 v34 q-7 6 -12 0 q-6 6 -12 0 q-6 6 -10 0Z"/>`, topY:39, eyeY:58, edge:20}
+  }[body];
+  let out = `<g fill="${g}" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round">${shapes.p}</g>`;
+  if (acc === 0) out += `<circle cx="38" cy="78" r="4" fill="${lt}"/><circle cx="58" cy="85" r="3.2" fill="${lt}"/><circle cx="61" cy="74" r="2.6" fill="${lt}"/>`;
+  else if (acc === 1) out += `<path d="M33 78 q8 5 16 0 M51 86 q8 5 16 0" stroke="${dk}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  else if (acc === 2) out += `<ellipse cx="50" cy="79" rx="12" ry="10" fill="${lt}" opacity=".8"/>`;
+  else if (acc === 3) out += `<circle cx="50" cy="79" r="7" fill="none" stroke="${dk}" stroke-width="2.6"/><circle cx="50" cy="79" r="2.4" fill="${dk}"/>`;
+  if (arm === 0) out += `<ellipse cx="${50 - shapes.edge - 3}" cy="70" rx="6" ry="9" fill="${g}" stroke="${INK}" stroke-width="2"/><ellipse cx="${50 + shapes.edge + 3}" cy="70" rx="6" ry="9" fill="${g}" stroke="${INK}" stroke-width="2"/>`;
+  else if (arm === 1) out += `<path d="M${50 - shapes.edge + 4} 63 q-13 -8 -16 4 q10 5 16 1Z" fill="${lt}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M${50 + shapes.edge - 4} 63 q13 -8 16 4 q-10 5 -16 1Z" fill="${lt}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>`;
+  const ty = shapes.topY;
+  if (top === 1) out += `<path d="M50 ${ty + 3} V${ty - 9}" stroke="${INK}" stroke-width="2"/><circle cx="50" cy="${ty - 12}" r="4.5" fill="#ffd166" stroke="${INK}" stroke-width="1.6"/>`;
+  else if (top === 2) out += `<path d="M42 ${ty + 6} L34 ${ty - 9} M58 ${ty + 6} L66 ${ty - 9}" stroke="${INK}" stroke-width="4.6" stroke-linecap="round"/><path d="M42 ${ty + 6} L34 ${ty - 9} M58 ${ty + 6} L66 ${ty - 9}" stroke="${lt}" stroke-width="2.2" stroke-linecap="round"/>`;
+  else if (top === 3) out += `<path d="M50 ${ty + 4} V${ty - 8}" stroke="${INK}" stroke-width="2.2"/><path d="M50 ${ty - 4} q-10 -2 -12 -10 q10 -1 12 6Z" fill="${lt}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><path d="M50 ${ty - 4} q10 -2 12 -10 q-10 -1 -12 6Z" fill="${lt}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>`;
+  else if (top === 4) out += `<ellipse cx="34" cy="${ty + 2}" rx="7" ry="10" fill="${g}" stroke="${INK}" stroke-width="2"/><ellipse cx="66" cy="${ty + 2}" rx="7" ry="10" fill="${g}" stroke="${INK}" stroke-width="2"/><ellipse cx="34" cy="${ty + 3}" rx="3" ry="5" fill="${lt}"/><ellipse cx="66" cy="${ty + 3}" rx="3" ry="5" fill="${lt}"/>`;
+  else if (top === 5) out += `<path d="M38 ${ty + 4} l-3 -12 l8 5 l4 -10 l4 10 l8 -5 l-3 12Z" fill="#ffd166" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>`;
+  const ey = shapes.eyeY;
+  if (eye === 0) out += `<circle cx="43" cy="${ey}" r="4.4" fill="#fff" stroke="${INK}" stroke-width="1.4"/><circle cx="57" cy="${ey}" r="4.4" fill="#fff" stroke="${INK}" stroke-width="1.4"/><circle cx="44" cy="${ey + 1}" r="2" fill="#182033"/><circle cx="58" cy="${ey + 1}" r="2" fill="#182033"/>`;
+  else if (eye === 1) out += `<path d="M36 ${ey} H64" stroke="#2b3a52" stroke-width="3"/><circle cx="43" cy="${ey}" r="5.4" fill="#dff6ff" stroke="#243249" stroke-width="1.8"/><circle cx="57" cy="${ey}" r="5.4" fill="#dff6ff" stroke="#243249" stroke-width="1.8"/><circle cx="44" cy="${ey + 1}" r="2.2" fill="#182033"/><circle cx="58" cy="${ey + 1}" r="2.2" fill="#182033"/>`;
+  else if (eye === 2) out += `<circle cx="50" cy="${ey}" r="8" fill="#fff" stroke="${INK}" stroke-width="1.6"/><circle cx="50" cy="${ey + 1}" r="3.6" fill="#182033"/><circle cx="52" cy="${ey - 1}" r="1.2" fill="#fff"/>`;
+  else out += `<circle cx="41" cy="${ey + 2}" r="3.4" fill="#fff" stroke="${INK}" stroke-width="1.2"/><circle cx="50" cy="${ey - 4}" r="3.6" fill="#fff" stroke="${INK}" stroke-width="1.2"/><circle cx="59" cy="${ey + 2}" r="3.4" fill="#fff" stroke="${INK}" stroke-width="1.2"/><circle cx="41" cy="${ey + 2}" r="1.6" fill="#182033"/><circle cx="50" cy="${ey - 4}" r="1.7" fill="#182033"/><circle cx="59" cy="${ey + 2}" r="1.6" fill="#182033"/>`;
+  out += `<path d="M45 ${ey + 11} q5 5 10 0" stroke="${INK}" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  return out;
+}
 function avatarSVG(a){
   let inner = '';
   if (a.k === 'platypus') inner = platypus(a, false);
@@ -1379,6 +1522,9 @@ function avatarSVG(a){
   else if (a.k === 'alien') inner = alien(a);
   else if (a.k === 'dog') inner = dog(a);
   else if (a.k === 'babyhead') inner = babyhead(a);
+  else if (a.k === 'grass') inner = grass(a);
+  else if (a.k === 'treebot') inner = treebot(a);
+  else if (a.k === 'critter') inner = critter(a);
   else if (a.k === 'duo') inner = duo();
   else {
     inner = humanInner(a);
@@ -1454,6 +1600,7 @@ const chapterOwned = ci => new Set(s.cards.filter(c => PACKS[CARDS[c.i].p].chapt
 const hasCard = ci => s.cards.some(c => c.i === ci);
 const upgradeMinutes = c => (packOf(c).wait || 15) + 2 * c.t;
 const upgradeCost = c => 2 * packOf(c).cost;
+const sellPrice = c => Math.max(1, Math.floor(packOf(c).cost * 0.1));
 
 function save(){
   try {
@@ -1506,7 +1653,8 @@ function rollTier(){
 function drawCard(p){
   const ci = p.pool[Math.floor(Math.random() * p.pool.length)];
   const tier = p.pull === 1 ? (Math.random() < 0.5 ? 3 : 4) : rollTier();
-  const rate = p.baseRate * TMULT[tier] * (0.92 + Math.random() * 0.16);
+  const base = BASES[CARDS[ci].b];
+  const rate = p.baseRate * (base.rateMul || 1) * TMULT[tier] * (0.92 + Math.random() * 0.16);
   return {id:rid(), i:ci, t:tier, c:+rate.toPrecision(8), m:1, f:tier === 4 || p.pull === 1};
 }
 function smartEquip(cards){
@@ -1563,6 +1711,45 @@ function startUpgrade(id){
   s.notice = '';
   closeModal(); save(); sfx('upgrade'); render();
   toast(`Upgrade started · ${durationText(mins)}`, 'good');
+}
+function sellCard(id){
+  const c = byId(id);
+  if (!c) return;
+  if (s.equipped.includes(id)){ toast('Unequip the card before selling it', 'bad'); return; }
+  if (s.upgrade && s.upgrade.cardId === id){ toast('This card is mid-upgrade — wait for it to finish', 'bad'); return; }
+  const price = sellPrice(c);
+  if (!confirm(`Sell ${defOf(c).n} for ${fmt(price)} coins?`)) return;
+  s.cards = s.cards.filter(x => x.id !== id);
+  s.coins += price;
+  save(); closeModal(); render();
+  toast(`Sold for ${fmt(price)} coins`, 'good');
+}
+function sellDuplicates(){
+  const eq = new Set(s.equipped);
+  const skip = s.upgrade ? s.upgrade.cardId : null;
+  const groups = {};
+  for (const c of s.cards){
+    if (eq.has(c.id) || c.id === skip) continue;
+    (groups[c.i] = groups[c.i] || []).push(c);
+  }
+  const extras = [];
+  for (const k in groups){
+    const arr = groups[k].sort((a,b) => eff(b) - eff(a));
+    extras.push(...arr.slice(1));
+  }
+  if (!extras.length){ toast('No unequipped duplicates to sell', 'bad'); return; }
+  const total = extras.reduce((sum, c) => sum + sellPrice(c), 0);
+  openModal(`<button class="x" data-close>✕</button><h3>Sell duplicates?</h3>
+    <p class="sub">Sell <b>${extras.length}</b> unequipped duplicate cards for <b>${fmt(total)} coins</b>? One copy of each card and all equipped cards are kept.</p>
+    <button class="btn primary wide" id="confirmSellDup">Sell ${extras.length} cards</button>
+    <button class="btn ghost wide" data-close style="margin-top:5px">Cancel</button>`);
+  document.getElementById('confirmSellDup').onclick = () => {
+    const ids = new Set(extras.map(c => c.id));
+    s.cards = s.cards.filter(c => !ids.has(c.id));
+    s.coins += total;
+    save(); closeModal(); render();
+    toast(`Sold ${extras.length} cards for ${fmt(total)} coins`, 'good');
+  };
 }
 
 /* =========================================================
@@ -1808,10 +1995,11 @@ function cardHTML(c, opts){
   opts = opts || {};
   const def = defOf(c), p = packOf(c), a = artFor(c);
   const eq = s.equipped.includes(c.id);
-  return `<article class="card ${c.t >= 3 ? 'holo' : ''} ${c.t === 4 ? 'secret' : ''} ${opts.big ? 'big' : ''}"
-    style="--border:${RCOL[c.t]};--shade:${RSHADE[c.t]};--tone:${p.color}">
+  return `<article class="card ${c.t >= 3 ? 'holo' : ''} ${c.t === 4 ? 'secret' : ''} ${def.star ? 'star' : ''} ${opts.big ? 'big' : ''}"
+    style="--border:${RCOL[c.t]};--shade:${RSHADE[c.t]};--tone:${a.tone || p.color}">
     <span class="holo-layer"></span>
     <div class="portrait"><span class="p-glow"></span>${artHTML(a)}
+      ${def.star ? '<span class="starbadge">★ STAR</span>' : ''}
       ${(c.m || 1) > 1 ? `<span class="mult">${c.m}×</span>` : ''}
       ${opts.showEq && eq ? '<span class="eqmark">EQUIPPED</span>' : ''}
     </div>
@@ -1906,10 +2094,10 @@ function filtered(){
 }
 function shortName(n){ return n.split(' — ')[0].replace('Doofenshmirtz Evil Inc.', 'Evil Inc.').replace('Giant Floating Baby Head', 'Baby Head'); }
 function miniHTML(c){
-  const def = defOf(c), p = packOf(c);
+  const def = defOf(c), p = packOf(c), a = artFor(c);
   const active = s.equipped.includes(c.id), full = s.equipped.length >= MAX_EQ;
-  return `<article class="mini ${active ? 'on' : ''}" style="--border:${RCOL[c.t]};--tone:${p.color}">
-    <div class="mini-art" style="--tone:${p.color}">${artHTML(artFor(c))}${(c.m || 1) > 1 ? `<span class="mult">${c.m}×</span>` : ''}</div>
+  return `<article class="mini ${active ? 'on' : ''} ${def.star ? 'star' : ''}" style="--border:${RCOL[c.t]};--tone:${a.tone || p.color}">
+    <div class="mini-art" style="--tone:${a.tone || p.color}">${artHTML(a)}${def.star ? '<span class="mini-star">★</span>' : ''}${(c.m || 1) > 1 ? `<span class="mult">${c.m}×</span>` : ''}</div>
     <div class="mini-name">${esc(def.n)}</div>
     <div class="mini-meta"><span style="color:${RCOL[c.t]}">${RARITY[c.t]}</span><b>🪙 ${fmt(eff(c))}/s</b></div>
     <div class="mini-btns">
@@ -1947,7 +2135,8 @@ function renderCards(){
     <p class="sub">${s.cards.length.toLocaleString()} cards · ${uniq.toLocaleString()} of ${total.toLocaleString()} collected · ${new Set(s.cards.map(c => c.i + ':' + c.t + ':' + c.f)).size.toLocaleString()} unique variants</p></div>
   <div class="uniq"><div class="uniq-top"><span>Complete set</span><b>${uniq.toLocaleString()} / ${total.toLocaleString()}</b></div><div class="bar"><i style="width:${(uniq / total * 100).toFixed(1)}%"></i></div></div>
   <section class="panel"><div class="eq-head"><div><h3>Equipped (${s.equipped.length}/5)</h3><p>Only these earn · <b>${fmt(incomePerSecond())} coins/sec</b></p></div><button class="btn ghost small" id="equipBest" ${s.cards.length ? '' : 'disabled'}>Equip best five</button></div>
-    <div class="slots">${slots}</div></section>
+    <div class="slots">${slots}</div>
+    <div class="sell-row"><button class="btn ghost small" id="sellDup" ${s.cards.length ? '' : 'disabled'}>Sell duplicates</button></div></section>
   <div class="toolbar">
     <div class="search"><span>🔎</span><input id="searchBox" placeholder="Search 1,000 cards" value="${esc(s.search || '')}" maxlength="40"></div>
     <div class="seg"><button data-cf="all" class="${s.cfilter === 'all' ? 'on' : ''}">All</button><button data-cf="equipped" class="${s.cfilter === 'equipped' ? 'on' : ''}">Equipped</button><button data-cf="upgraded" class="${s.cfilter === 'upgraded' ? 'on' : ''}">Upgraded</button></div>
@@ -1965,6 +2154,8 @@ function renderCards(){
   };
   const go = document.getElementById('goPacks');
   if (go) go.onclick = () => { s.page = 'packs'; render(); };
+  const sd = document.getElementById('sellDup');
+  if (sd) sd.onclick = sellDuplicates;
   el.querySelectorAll('[data-unequip]').forEach(b => b.onclick = () => { s.equipped = s.equipped.filter(x => x !== b.dataset.unequip); save(); render(); });
   const search = document.getElementById('searchBox');
   search.oninput = () => { s.search = search.value; s.limit = 24; fillGrid(); };
@@ -2058,7 +2249,8 @@ function openDetail(id){
       <div class="kv"><span>Upgrade wait</span><b>${durationText(upgradeMinutes(c))}</b></div>
       <button class="btn primary wide" id="dEq" ${!active && full ? 'disabled' : ''}>${active ? 'Unequip card' : 'Equip card'}</button>
       <button class="btn ghost wide" id="dUp" ${s.upgrade ? 'disabled' : ''}>⚗ Start upgrade</button>
-      <p class="hint" style="margin:7px 0 0">A 1× result can lower an upgraded card. The card is never lost.</p></div>`);
+      <button class="btn ghost wide" id="dSell" ${active ? 'disabled' : ''}>Sell for 🪙 ${fmt(sellPrice(c))}</button>
+      <p class="hint" style="margin:7px 0 0">${active ? 'Unequip the card before selling it.' : 'Selling returns 10% of the pack price.'} A 1× upgrade result can lower an upgraded card; the card is never lost.</p></div>`);
   const eq = document.getElementById('dEq');
   if (eq) eq.onclick = () => {
     if (active) s.equipped = s.equipped.filter(x => x !== c.id);
@@ -2068,6 +2260,8 @@ function openDetail(id){
   };
   const up = document.getElementById('dUp');
   if (up) up.onclick = () => openUpgrade(c.id);
+  const sell = document.getElementById('dSell');
+  if (sell) sell.onclick = () => sellCard(c.id);
 }
 function openUpgrade(id){
   const c = byId(id);
