@@ -831,8 +831,71 @@ function pickRoster(pool, n, seed){
   return arr.slice(0, n);
 }
 
+/* =========================================================
+   NEW CHARACTER GENERATOR
+   Every pack holds ten brand-new characters. Names are built
+   from a chapter-themed adjective plus a creature noun, and
+   each card gets its own art variant + colour.
+   ========================================================= */
+const NAME_ADJ = [
+  ['Sunny','Salty','Coral','Tidal','Sandy','Sprinkler','Lemonade','Bubble','Watermelon','Popsicle','Kite','Puddle','Splashdown','Backyard','Garden','Sandcastle'],
+  ['Downtown','Bus Stop','Mailbox','Scooter','Mall','Slushy','Cookie','Go-Kart','Treehouse','Sidewalk','Neighborhood','Town Hall','Bicycle','Snack','Schoolyard','Mayor'],
+  ['Fedora','Laser','Briefcase','Cipher','Spyglass','Walkie-Talkie','Microfilm','Gadget','Stealth','Razor','Satellite','Codebook','Nightwatch','Badge','Wiretap','Undercover'],
+  ['Inator','Gear','Plasma','Magnet','Raygun','Voltage','Sprocket','Test Tube','Static','Bolt','Rivet','Fuse','Piston','Glow','Hypno','Clone'],
+  ['Popcorn','Red Carpet','Stunt','Blooper','Camera','Sequel','Trailer','Blockbuster','Matinee','Snack Bar','Spotlight','Reel','Credits','Montage','Premiere','Cameo'],
+  ['Tinsel','Candy Cane','Mistletoe','Firecracker','Pumpkin','Eggnog','Shamrock','Valentine','Sleigh','Bonfire','Parade','Confetti','Snowball','Lantern','Costume','Giftwrap'],
+  ['Portal','Mirror','Quantum','Glitch','Warp','Phase','Paradox','Echo','Rift','Chrome','Neon','Void','Circuit','Hologram','Shard','Static'],
+  ['Disco','Encore','Vinyl','Kazoo','Microphone','Power Chord','Rhythm','Backstage','Amp','Cassette','Ballad','Solo','Mosh Pit','Fanfare','Remix','Spotlight'],
+  ['Mythic','Kraken','Phoenix','Troll','Banshee','Sphinx','Yeti','Dragon','Wyvern','Cyclops','Gargoyle','Basilisk','Griffin','Manticore','Wraith','Titan'],
+  ['Cosmic','Nova','Aurum','Eclipse','Starlight','Singularity','Gilded','Royal','Obsidian','Platinum','Celestial','Radiant','Imperial','Meteor','Diamond','Infinity']
+];
+const NAME_NOUN = ['Golem','Slime','Sprite','Bot','Titan','Drone','Ghost','Wisp','Blob','Crab','Snail','Yeti','Reindeer','Cactus','Parrot','Cat','Duck','Goose','Comet','Toaster','Muffin','Puppet','Plane','Pencil','Eraser','Raccoon','Mouse','Pumpkin','Bee','Balloon','Tiger','Shark','Dragon','Gecko','Turtle','Spider','Bear','Eagle','Porcupine','Narwhal','Vulture','Pug','Turkey','Bat','Bunny','Moth','Penguin','Slug','Lynx','Rooster','Elephant','Mole','Pixie','Phoenix','Puffer','Jet','Vacuum','Pigeon','Newt','Mammoth','Squid','Otter','Walrus','Mantis','Ferret','Badger','Falcon','Bison','Moose','Chameleon','Scorpion','Jellyfish','Starfish','Seahorse','Hedgehog','Koala','Panda','Lemur','Sloth','Armadillo','Pelican','Toucan','Flamingo','Piranha','Anglerfish','Sasquatch','Gremlin','Warlock','Sphinx','Cyclops','Kraken','Griffin','Basilisk'];
+const RESERVED_NAMES = new Set(['Grass','Mecha Tree Bot']);
+const usedNames = new Set();
+function chapterNames(ci, count, seed){
+  const adjs = NAME_ADJ[ci] || NAME_ADJ[0];
+  const combos = [];
+  for (const a of adjs) for (const n of NAME_NOUN) combos.push(a + ' ' + n);
+  const rnd = seeded(seed);
+  for (let i = combos.length - 1; i > 0; i--){
+    const j = Math.floor(rnd() * (i + 1));
+    const t = combos[i]; combos[i] = combos[j]; combos[j] = t;
+  }
+  const out = [];
+  let blockNouns = new Set(), blockAdjs = new Set();
+  const take = strict => {
+    for (const c of combos){
+      if (out.length >= count) return;
+      if (out.length % 10 === 0){ blockNouns = new Set(); blockAdjs = new Set(); }
+      const cut = c.lastIndexOf(' ');
+      const adj = c.slice(0, cut), noun = c.slice(cut + 1);
+      if (strict && (blockNouns.has(noun) || blockAdjs.has(adj))) continue;
+      if (usedNames.has(c) || RESERVED_NAMES.has(c)) continue;
+      usedNames.add(c);
+      blockNouns.add(noun); blockAdjs.add(adj);
+      out.push(c);
+    }
+  };
+  take(true);
+  if (out.length < count) take(false);
+  return out;
+}
+/* unique art variant per card: 6 bodies x 5 tops x 3 arms x 5 accents x 4 eyes */
+const CRITTER_VARIANTS = [];
+for (let bd = 0; bd < 6; bd++)
+  for (let tp = 0; tp < 5; tp++)
+    for (let ar = 0; ar < 3; ar++)
+      for (let ac = 0; ac < 5; ac++)
+        for (let ey = 0; ey < 4; ey++) CRITTER_VARIANTS.push([bd, tp, ar, ac, ey]);
+const varRnd = seeded(20260816);
+for (let i = CRITTER_VARIANTS.length - 1; i > 0; i--){
+  const j = Math.floor(varRnd() * (i + 1));
+  const t = CRITTER_VARIANTS[i]; CRITTER_VARIANTS[i] = CRITTER_VARIANTS[j]; CRITTER_VARIANTS[j] = t;
+}
+
 let packIndex = 0;
 CHAPTERS.forEach((ch, ci) => {
+  const chNames = chapterNames(ci, 100, 7919 * (ci + 1) + 13);
   ch.themes.forEach((t, ti) => {
     const i = packIndex++;
     const cost = i === 99 ? 1e12 : round3(100 * Math.pow(1e12 / 100, i / 99));
@@ -841,15 +904,24 @@ CHAPTERS.forEach((ch, ci) => {
     const pack = {
       i, name:t[0], tag:t[1], icon:t[2], ed:t[3], chapter:ci,
       cost, pull, baseRate, wait:WAITS[ci], color:ch.color,
-      desc:`${ch.blurb} The ${t[0]} edition — ten exclusive cards.`,
+      desc:`${ch.blurb} Ten brand-new characters.`,
       pool:[]
     };
-    const roster = pickRoster(ch.pool, 10, i * 37 + ci * 101 + 7);
-    roster.forEach(b => {
+    for (let k = 0; k < 10; k++){
       const cardIndex = CARDS.length;
-      CARDS.push({i:cardIndex, b, e:t[3], p:i, n:`${BASES[b].s} — ${t[1]}`});
+      const name = chNames[ti * 10 + k] || ('Mystery Sprite ' + (cardIndex + 1));
+      const bIndex = BASES.length;
+      const hue = (cardIndex * 137.508 + 96) % 360;
+      BASES.push({
+        n:name, s:name, k:'critter',
+        v:CRITTER_VARIANTS[cardIndex % CRITTER_VARIANTS.length],
+        seed:cardIndex,
+        tone:hueHex(hue, 56 + (cardIndex % 5) * 5, 46 + (cardIndex % 7) * 4),
+        unique:1
+      });
+      CARDS.push({i:cardIndex, b:bIndex, e:'classic', p:i, n:name});
       pack.pool.push(cardIndex);
-    });
+    }
     pack.band = pull === 1
       ? [baseRate * TMULT[3] * 0.92, baseRate * TMULT[4] * 1.08]
       : [baseRate * TMULT[0] * 0.92, baseRate * TMULT[4] * 1.08];
@@ -977,55 +1049,16 @@ function packName(p){
 }
 
 /* =========================================================
-   NEW THINGS: one unique new entity per pack (packs 0-98),
-   plus a star-only 1T pack (pack 99).
+   SPECIAL CHARACTERS + STAR-ONLY 1T PACK (pack 99)
    ========================================================= */
-const TONES = ['#6fbf4a','#4fc3f7','#ffb347','#e0556f','#b07be0','#3fa89b','#f0b23a','#9b6ee8','#5a9cec','#ff7ab8','#8fd14f','#ffd166'];
-const UNIQUE_RAW = [
-  ['Grass','🌱'],['Sprinkler Sprite','💦'],['Lemonade Golem','🍋'],['Sandcastle Crab','🦀'],['Boardwalk Pelican','🐦'],
-  ['Firework Comet','☄️'],['Slushy Slime','🥤'],['Robo-Squirrel','🐿️'],['Treehouse Titan','🏡'],['Gnome Guard','🧙'],
-  ['Fedora Drone','🛸'],['Inator Bot','🤖'],['Lab Rat','🐀'],['Backstory Ghost','👻'],['Self-Destruct Sprout','🌿'],
-  ['Platy-Sub','🛥️'],['Portal Wisp','🌀'],['Doof-2 Drone','🛰️'],['Alien Snail','🐌'],['Halloween Scarecrow','🌾'],
-  ['Christmas Yeti','❄️'],['Robo-Reindeer','🦌'],['Cupid Comet','💘'],['Future Cactus','🪴'],['Pirate Parrot','🦜'],
-  ['Cowboy Cactus','🌵'],['Ninja Cat','🐱'],['Monster Blob','👾'],['Glitch Bug','🐛'],['Disco Duck','🦆'],
-  ['Golden Goose','🪿'],['Pizza Comet','🍕'],['Toaster Bot','🔌'],['Sock Puppet','🧦'],['Bubble Blob','🫧'],
-  ['Paper Plane','✈️'],['Pencil Pal','✏️'],['Eraser Buddy','🧽'],['Muffin Meteor','🧁'],['Cactus Kid','🌵'],
-  ['Rubber Duck','🐤'],['Doof Gnome','🧔'],['Lawnmower Golem','🚜'],['Robo-Raccoon','🦝'],['Slime King','👑'],
-  ['Magnet Mouse','🧲'],['Pogo Pumpkin','🎃'],['Bubble Bee','🐝'],['Balloon Bot','🎈'],['Candy Crab','🍬'],
-  ['Tinsel Tiger','🐯'],['Snowman Spy','☃️'],['Heart Hoverbot','💗'],['Jelly Bean Jet','🚀'],['Pirate Puffer','🐡'],
-  ['Cactus Cowboy','🤠'],['Ninja Newt','🦎'],['Vampire Vacuum','🧛'],['Pixel Pigeon','🕊️'],['Disco Ball','🪩'],
-  ['Golden Gopher','🐹'],['Pizza Pixie','🧚'],['Toaster Titan','🍞'],['Sock Snake','🐍'],['Bubble Bunny','🐰'],
-  ['Paper Phoenix','🐦‍🔥'],['Pencil Pixie','🧚‍♀️'],['Eraser Elephant','🐘'],['Muffin Mole','🐭'],['Cactus Cub','🐾'],
-  ['Rubber Raccoon','🦝'],['Gnome Golem','🗿'],['Lawnmower Lynx','🐆'],['Robo-Rooster','🐓'],['Slime Slug','🐌'],
-  ['Magnet Moth','🦋'],['Pogo Penguin','🐧'],['Bubble Bat','🦇'],['Balloon Bunny','🐇'],['Candy Cat','🍭'],
-  ['Tinsel Turkey','🦃'],['Snowman Shark','🦈'],['Heart Hummingbird','💞'],['Jelly Bean Jaguar','🫘'],['Pirate Pug','🐶'],
-  ['Cactus Crab','🌵'],['Ninja Narwhal','🐋'],['Vampire Vulture','🦅'],['Pixel Parrot','🦜'],['Disco Dragon','🐉'],
-  ['Golden Gecko','🪙'],['Pizza Python','🍕'],['Toaster Turtle','🐢'],['Sock Spider','🕷️'],['Bubble Bear','🐻'],
-  ['Paper Pterodactyl','🦖'],['Pencil Porcupine','🦔'],['Eraser Eagle','🦅'],['Mecha Tree Bot','🌳']
-];
-const uniques = [];
-let up = 0;
-for (const [n, sg] of UNIQUE_RAW){
-  if (n === 'Mecha Tree Bot') continue;
-  while (up === 61) up++;
-  uniques.push({n, sg, pack:up});
-  up++;
+function placeSpecial(packIdx, slot, name, kind, rateMul, tone){
+  const ci = PACKS[packIdx].pool[slot];
+  const bIndex = BASES.length;
+  BASES.push({n:name, s:name, k:kind, seed:9000 + bIndex, tone:tone, unique:1, rateMul:rateMul || 1});
+  CARDS[ci] = Object.assign({}, CARDS[ci], {b:bIndex, e:'classic', n:name, unique:1});
 }
-uniques.push({n:'Mecha Tree Bot', sg:'🌳', pack:61});
-uniques.sort((a,b) => a.pack - b.pack);
-uniques.forEach((u, i) => {
-  const isGrass = u.n === 'Grass';
-  const isTree = u.n === 'Mecha Tree Bot';
-  const baseIndex = BASES.length;
-  BASES.push({
-    n:u.n, s:u.n,
-    k:isGrass ? 'grass' : isTree ? 'treebot' : 'critter',
-    sg:u.sg, seed:i, tone:hueHex((i * 137.508 + 96) % 360, 62, 55), unique:1,
-    rateMul:isGrass ? 0.5 : 1
-  });
-  const slot = PACKS[u.pack].pool[9];
-  CARDS[slot] = Object.assign({}, CARDS[slot], {b:baseIndex, e:'classic', n:u.n, unique:1});
-});
+placeSpecial(0, 9, 'Grass', 'grass', 0.5, '#6fbf4a');
+placeSpecial(61, 9, 'Mecha Tree Bot', 'treebot', 1, '#7fc24a');
 const STAR_BASES = [0,1,2,38,6,5,22,7,8,9];
 PACKS[99].pool.forEach((ci, j) => {
   const b = STAR_BASES[j];
@@ -1484,7 +1517,8 @@ function critter(a){
   const g = a.tone || '#6fbf4a';
   const dk = shade(g, -34), lt = shade(g, 42);
   const h = hashStr((a.n || 'critter') + '|' + (a.seed === undefined ? '' : a.seed));
-  const body = h % 6, top = (h >>> 3) % 5, arm = (h >>> 6) % 3, acc = (h >>> 9) % 5, eye = (h >>> 12) % 4;
+  const v = a.v || [h % 6, (h >>> 3) % 5, (h >>> 6) % 3, (h >>> 9) % 5, (h >>> 12) % 4];
+  const body = v[0], top = v[1], arm = v[2], acc = v[3], eye = v[4];
   const shapes = {
     0: {p:`<ellipse cx="50" cy="68" rx="27" ry="25"/>`, topY:44, eyeY:62, edge:24},
     1: {p:`<ellipse cx="50" cy="64" rx="23" ry="28"/>`, topY:37, eyeY:58, edge:20},
@@ -2006,7 +2040,7 @@ function cardHTML(c, opts){
     <div class="cbody">
       <div class="cname">${esc(def.n)}</div>
       <div class="crate">🪙 ${fmt(eff(c))} <small>coins/sec</small></div>
-      <div class="cmeta"><span style="color:${RCOL[c.t]}">${RARITY[c.t]}</span><span>${c.f ? '✦ FOIL' : 'SUMMER EDITION'}</span></div>
+      <div class="cmeta"><span style="color:${RCOL[c.t]}">${RARITY[c.t]}</span><span>${c.f ? '✦ FOIL' : def.star ? '★ STAR' : 'NEW · ' + String(c.i + 1).padStart(3, '0')}</span></div>
       <div class="cset">${packName(p)}</div>
     </div>
   </article>`;
