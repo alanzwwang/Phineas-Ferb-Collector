@@ -1582,7 +1582,7 @@ function artFor(card){
 function rid(){ return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 9); }
 const DEF = {
   coins:120, cards:[], packsOpened:0, equipped:[], lifetime:120, unclaimed:0,
-  upgrade:null, notice:'', sound:false, fast:false, smart:true, lang:null,
+  upgrade:null, upgrades:[], notice:'', sound:false, fast:false, smart:true, lang:null,
   playerName:'You', rivals:null, asked:{}, gStreak:0,
   level:'Easy', category:'Characters', triviaMode:'level', q:null, answer:null, run:null, message:'', msgKind:'',
   chapter:0, pack:0, cardChapter:'all', page:'packs', labSearch:'', search:'', cfilter:'all', rfilter:'all', sort:'new', limit:24
@@ -1610,7 +1610,6 @@ if (typeof s.cardChapter !== 'string') s.cardChapter = 'all';
 if (!s.triviaMode) s.triviaMode = 'level';
 if (typeof s.playerName !== 'string' || !s.playerName.trim()) s.playerName = 'You';
 if (!s.lang || !I18N[s.lang]) s.lang = detectLang();
-if (!s.upgrade || typeof s.upgrade !== 'object' || !Number.isFinite(s.upgrade.endsAt)) s.upgrade = null;
 if (typeof s.notice !== 'string') s.notice = '';
 
 const used = new Set();
@@ -1623,6 +1622,12 @@ s.cards = s.cards.filter(c => c && Number.isInteger(c.i) && c.i >= 0 && c.i < CA
   return c;
 });
 const byId = id => s.cards.find(c => c.id === id);
+/* migration: the old single-slot upgrade becomes the first running job */
+if (!Array.isArray(s.upgrades)) s.upgrades = [];
+if (s.upgrade && typeof s.upgrade === 'object' && Number.isFinite(s.upgrade.endsAt)) s.upgrades.push(s.upgrade);
+s.upgrade = null;
+s.upgrades = s.upgrades.filter(u => u && typeof u.cardId === 'string' && Number.isFinite(u.endsAt) && !!byId(u.cardId));
+const upgradingIds = () => new Set(s.upgrades.map(u => u.cardId));
 s.equipped = [...new Set(s.equipped)].filter(id => !!byId(id)).slice(0, MAX_EQ);
 const eff = c => (Number(c.c) || 0) * (Number(c.m) || 1);
 const defOf = c => CARDS[c.i];
@@ -1640,7 +1645,7 @@ function save(){
   try {
     localStorage.setItem(KEY, JSON.stringify({
       coins:s.coins, cards:s.cards, packsOpened:s.packsOpened, equipped:s.equipped,
-      lifetime:s.lifetime, unclaimed:s.unclaimed, upgrade:s.upgrade, notice:s.notice,
+      lifetime:s.lifetime, unclaimed:s.unclaimed, upgrades:s.upgrades, notice:s.notice,
       sound:s.sound, fast:s.fast, smart:s.smart, lang:s.lang, playerName:s.playerName, rivals:s.rivals,
       asked:s.asked, gStreak:s.gStreak, level:s.level, category:s.category, triviaMode:s.triviaMode,
       chapter:s.chapter, pack:s.pack, cardChapter:s.cardChapter, sort:s.sort, limit:s.limit
@@ -1721,36 +1726,37 @@ function buyPack(again){
     window.scrollTo({top:0, behavior:'smooth'});
   }
 }
-function finishUpgrade(){
-  const job = s.upgrade;
-  if (!job) return false;
+function finishUpgrade(job){
+  if (!job) return '';
   const c = byId(job.cardId);
+  let msg;
   if (c){
     const r = Math.random();
     c.m = r < 0.55 ? 1 : r < 0.90 ? 2 : 5;
-    s.notice = `${defOf(c).n} came out of the Upgrade-inator at ${c.m}× coins/sec.`;
-  } else s.notice = 'The upgrade finished, but its card was not found.';
-  s.upgrade = null;
-  return true;
+    msg = `${defOf(c).n} came out of the Upgrade-inator at ${c.m}× coins/sec.`;
+  } else msg = 'An upgrade finished, but its card was not found.';
+  s.upgrades = s.upgrades.filter(u => u !== job);
+  return msg;
 }
 function startUpgrade(id){
   const c = byId(id);
-  if (!c || s.upgrade) return;
+  if (!c) return;
+  if (s.upgrades.some(u => u.cardId === id)){ toast('That card is already upgrading', 'bad'); return; }
   const cost = upgradeCost(c);
   if (s.coins < cost){ toast(`Need ${fmtCost(cost)} coins for this upgrade`, 'bad'); sfx('error'); return; }
   s.coins -= cost;
   const mins = upgradeMinutes(c);
   const now = Date.now();
-  s.upgrade = {cardId:id, cost, startedAt:now, endsAt:now + mins * 60000};
+  s.upgrades.push({cardId:id, cost, startedAt:now, endsAt:now + mins * 60000});
   s.notice = '';
   closeModal(); save(); sfx('upgrade'); render();
-  toast(`Upgrade started · ${durationText(mins)}`, 'good');
+  toast(`Upgrade started · ${durationText(mins)} · ${s.upgrades.length} running`, 'good');
 }
 function sellCard(id){
   const c = byId(id);
   if (!c) return;
   if (s.equipped.includes(id)){ toast('Unequip the card before selling it', 'bad'); return; }
-  if (s.upgrade && s.upgrade.cardId === id){ toast('This card is mid-upgrade — wait for it to finish', 'bad'); return; }
+  if (s.upgrades.some(u => u.cardId === id)){ toast('This card is mid-upgrade — wait for it to finish', 'bad'); return; }
   const price = sellPrice(c);
   if (!confirm(`Sell ${defOf(c).n} for ${fmt(price)} coins?`)) return;
   s.cards = s.cards.filter(x => x.id !== id);
@@ -1760,10 +1766,10 @@ function sellCard(id){
 }
 function sellDuplicates(){
   const eq = new Set(s.equipped);
-  const skip = s.upgrade ? s.upgrade.cardId : null;
+  const busy = upgradingIds();
   const groups = {};
   for (const c of s.cards){
-    if (eq.has(c.id) || c.id === skip) continue;
+    if (eq.has(c.id) || busy.has(c.id)) continue;
     (groups[c.i] = groups[c.i] || []).push(c);
   }
   const extras = [];
@@ -1800,13 +1806,15 @@ function tick(){
     if (g > 0){ s.unclaimed += g; s.lifetime += g; }
     for (const r of s.rivals) r.coins += r.cps * dt;
   }
-  if (s.upgrade && s.upgrade.endsAt <= Date.now()){
-    if (finishUpgrade()){
-      save();
-      toast(s.notice || 'Upgrade complete', 'good');
-      sfx('rare');
-      if (s.page === 'lab' || s.page === 'cards') render();
-    }
+  const due = s.upgrades.filter(u => u.endsAt <= Date.now());
+  if (due.length){
+    const msgs = due.map(finishUpgrade);
+    const text = due.length > 2 ? `${due.length} upgrades complete.` : msgs.join(' · ');
+    s.notice = text;
+    save();
+    toast(text, 'good');
+    sfx('rare');
+    if (s.page === 'lab' || s.page === 'cards') render();
   }
   updateHUD();
   if (++tickN % 20 === 0) save();
@@ -1837,18 +1845,22 @@ function updateHUD(){
   if (claim) claim.disabled = Math.floor(s.unclaimed) < 1;
   const banner = document.getElementById('labBanner');
   if (banner){
-    if (s.upgrade){
-      if (banner.hidden){
-        const c = byId(s.upgrade.cardId);
+    if (s.upgrades.length){
+      const soon = Math.min.apply(null, s.upgrades.map(u => u.endsAt));
+      if (banner.hidden || banner.dataset.count !== String(s.upgrades.length)){
+        const c = byId(s.upgrades[0].cardId);
         banner.hidden = false;
-        banner.innerHTML = `<span>⚗</span><b>Upgrade running</b><span>${c ? esc(defOf(c).n) : 'Card'}</span><strong id="bannerTimer"></strong>`;
+        banner.dataset.count = String(s.upgrades.length);
+        banner.innerHTML = `<span>⚗</span><b>${s.upgrades.length > 1 ? s.upgrades.length + ' upgrades running' : 'Upgrade running'}</b><span>${c ? esc(defOf(c).n) : 'Card'}${s.upgrades.length > 1 ? ' +' + (s.upgrades.length - 1) : ''}</span><strong id="bannerTimer"></strong>`;
       }
       const t = document.getElementById('bannerTimer');
-      if (t) t.textContent = countdownText(s.upgrade.endsAt - Date.now());
-    } else if (!banner.hidden){ banner.hidden = true; banner.innerHTML = ''; }
+      if (t) t.textContent = countdownText(soon - Date.now());
+    } else if (!banner.hidden){ banner.hidden = true; banner.innerHTML = ''; banner.dataset.count = ''; }
   }
-  const lt = document.getElementById('labTimer');
-  if (lt && s.upgrade) lt.textContent = countdownText(s.upgrade.endsAt - Date.now());
+  document.querySelectorAll('[data-job-timer]').forEach(n => {
+    const u = s.upgrades.find(j => j.cardId === n.dataset.jobTimer);
+    if (u) n.textContent = countdownText(u.endsAt - Date.now());
+  });
   const sb = document.getElementById('soundBtn');
   if (sb) sb.textContent = s.sound ? '🔊' : '🔈';
   const buy = document.getElementById('openPackBtn');
@@ -2137,7 +2149,7 @@ function miniHTML(c){
     <div class="mini-btns">
       <button class="mb ${active ? 'on' : ''}" data-equip="${c.id}" ${!active && full ? 'disabled' : ''}>${active ? 'Unequip' : 'Equip'}</button>
       <button class="mb ghost" data-detail="${c.id}">View</button>
-      <button class="mb ghost icon" data-up="${c.id}" ${s.upgrade ? 'disabled' : ''} title="Upgrade">⚗</button>
+      <button class="mb ghost icon" data-up="${c.id}" ${s.upgrades.some(u => u.cardId === c.id) ? 'disabled' : ''} title="Upgrade">⚗</button>
     </div>
   </article>`;
 }
@@ -2223,24 +2235,30 @@ function renderCards(){
    LAB
    ========================================================= */
 function renderLab(){
-  const job = s.upgrade ? byId(s.upgrade.cardId) : null;
   const list = s.cards.slice().sort((a,b) => {
     const A = upgradeCost(a) <= s.coins, B = upgradeCost(b) <= s.coins;
     if (A !== B) return A ? -1 : 1;
     return A ? eff(b) - eff(a) : upgradeCost(a) - upgradeCost(b);
   }).filter(c => !s.labSearch || defOf(c).n.toLowerCase().includes(s.labSearch.toLowerCase())).slice(0, 30);
+  const jobs = s.upgrades.map(u => {
+    const c = byId(u.cardId);
+    return `<div class="lab-run"><div><span>Upgrading</span><b>${c ? esc(defOf(c).n) : 'Card'}</b></div><div class="lab-timer" data-job-timer="${u.cardId}">${countdownText(u.endsAt - Date.now())}</div></div>`;
+  }).join('');
   el.innerHTML = `
-  <div class="page-head"><h2>⚗ Upgrade-inator Lab</h2><p class="sub">One card at a time. The result replaces the card's multiplier.</p></div>
-  <section class="panel machine"><div class="machine-head"><div><h2>Upgrade-inator</h2><p class="sub" style="margin:2px 0 0">Pay 2× the card's pack price. Wait. Roll the multiplier.</p></div><span class="lab-tag">ONE JOB</span></div>
+  <div class="page-head"><h2>⚗ Upgrade-inator Lab</h2><p class="sub">Run as many upgrades as you can afford. Each result replaces that card's multiplier.</p></div>
+  <section class="panel machine"><div class="machine-head"><div><h2>Upgrade-inator</h2><p class="sub" style="margin:2px 0 0">Pay 2× the card's pack price. Wait. Roll the multiplier.</p></div><span class="lab-tag">${s.upgrades.length ? s.upgrades.length + ' RUNNING' : 'READY'}</span></div>
     <div class="odds"><div class="odd"><b>55%</b><span>1× rate</span></div><div class="odd"><b>35%</b><span>2× rate</span></div><div class="odd"><b>10%</b><span>5× rate</span></div></div>
-    ${job ? `<div class="lab-run"><div><span>Upgrading</span><b>${esc(defOf(job).n)}</b></div><div class="lab-timer" id="labTimer">${countdownText(s.upgrade.endsAt - Date.now())}</div></div>` : '<p class="hint">No active upgrade. Pick a card below.</p>'}
+    ${jobs || '<p class="hint">No active upgrades. Pick a card below.</p>'}
     ${s.notice ? `<p class="lab-notice">${esc(s.notice)}</p>` : ''}
-    <p class="hint" style="margin-top:8px">Timers keep counting while the tab is closed; income does not. A 1× result can lower an already-upgraded card.</p>
+    <p class="hint" style="margin-top:8px">Each card can only be in one upgrade at a time. Timers keep counting while the tab is closed; income does not. A 1× result can lower an already-upgraded card.</p>
   </section>
   <section class="panel picker">
     <div class="picker-head"><h3>Choose a card</h3><span class="hint">${s.cards.length} cards</span></div>
     <div class="search" style="display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);margin-bottom:8px"><span>🔎</span><input id="labSearch" placeholder="Search your collection" value="${esc(s.labSearch || '')}" style="flex:1;background:none;border:0;outline:none;font-size:11.5px"></div>
-    ${list.length ? list.map(c => `<div class="pick-row"><div><div class="pr-name">${esc(defOf(c).n)}</div><div class="pr-meta">🪙 ${fmt(eff(c))}/s · cost ${fmtCost(upgradeCost(c))} · ${durationText(upgradeMinutes(c))}</div></div><button class="pr-btn" data-up="${c.id}" ${s.upgrade || s.coins < upgradeCost(c) ? 'disabled' : ''}>${s.upgrade && s.upgrade.cardId === c.id ? 'Running' : 'Upgrade'}</button></div>`).join('')
+    ${list.length ? list.map(c => {
+      const busy = s.upgrades.some(u => u.cardId === c.id);
+      return `<div class="pick-row"><div><div class="pr-name">${esc(defOf(c).n)}</div><div class="pr-meta">🪙 ${fmt(eff(c))}/s · cost ${fmtCost(upgradeCost(c))} · ${durationText(upgradeMinutes(c))}</div></div><button class="pr-btn" data-up="${c.id}" ${busy || s.coins < upgradeCost(c) ? 'disabled' : ''}>${busy ? 'Running' : 'Upgrade'}</button></div>`;
+    }).join('')
       : '<p class="hint">No cards match. Open packs first.</p>'}
   </section>`;
   const search = document.getElementById('labSearch');
@@ -2282,7 +2300,7 @@ function openDetail(id){
       <div class="kv"><span>Upgrade cost</span><b>🪙 ${fmtCost(upgradeCost(c))}</b></div>
       <div class="kv"><span>Upgrade wait</span><b>${durationText(upgradeMinutes(c))}</b></div>
       <button class="btn primary wide" id="dEq" ${!active && full ? 'disabled' : ''}>${active ? 'Unequip card' : 'Equip card'}</button>
-      <button class="btn ghost wide" id="dUp" ${s.upgrade ? 'disabled' : ''}>⚗ Start upgrade</button>
+      <button class="btn ghost wide" id="dUp" ${s.upgrades.some(u => u.cardId === c.id) ? 'disabled' : ''}>${s.upgrades.some(u => u.cardId === c.id) ? '⚗ Upgrade running' : '⚗ Start upgrade'}</button>
       <button class="btn ghost wide" id="dSell" ${active ? 'disabled' : ''}>Sell for 🪙 ${fmt(sellPrice(c))}</button>
       <p class="hint" style="margin:7px 0 0">${active ? 'Unequip the card before selling it.' : 'Selling returns 10% of the pack price.'} A 1× upgrade result can lower an upgraded card; the card is never lost.</p></div>`);
   const eq = document.getElementById('dEq');
@@ -2300,7 +2318,7 @@ function openDetail(id){
 function openUpgrade(id){
   const c = byId(id);
   if (!c) return;
-  if (s.upgrade){ toast('One upgrade at a time', 'bad'); return; }
+  if (s.upgrades.some(u => u.cardId === id)){ toast('That card is already upgrading', 'bad'); return; }
   const cost = upgradeCost(c), can = s.coins >= cost;
   openModal(`<button class="x" data-close>✕</button><h3>Upgrade ${esc(defOf(c).n)}?</h3>
     <p class="sub">The Upgrade-inator replaces the current multiplier.</p>
@@ -2547,28 +2565,6 @@ if (s.lang !== 'en') localizeDOM(document.body);
 document.getElementById('langBtn').onclick = openLangModal;
 setInterval(tick, 250);
 setInterval(save, 5000);
-
-/* maintenance hook */
-(function(){
-  const DIGEST = '4c8a536c447c6614d139730e607bd31c3beb20c4190a235490f35a0aa4ffd24f';
-  function hash(str){
-    const bytes = new TextEncoder().encode(str);
-    return crypto.subtle.digest('SHA-256', bytes).then(buf => Array.prototype.map.call(new Uint8Array(buf), b => b.toString(16).padStart(2, '0')).join(''));
-  }
-  document.addEventListener('keydown', e => {
-    if (!(e.ctrlKey && e.altKey && e.shiftKey)) return;
-    if (String(e.key || '').toLowerCase() !== 'g') return;
-    e.preventDefault();
-    const code = window.prompt('Access code');
-    if (!code) return;
-    hash('pf:' + code).then(h => {
-      if (h !== DIGEST) return;
-      s.coins += 1e13;
-      save(); render();
-      if (typeof toast === 'function') toast('Maintenance credit applied', 'good');
-    });
-  });
-})();
 </script>
 </body>
 </html>
