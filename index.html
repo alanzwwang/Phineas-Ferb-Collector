@@ -1646,13 +1646,14 @@ const sellPrice = c => Math.max(1, Math.floor(packOf(c).cost * 0.1));
 const OFFLINE_RATE = 0.5, OFFLINE_CAP_MS = 2 * 60 * 60 * 1000;
 let offlineReport = null;
 if (Number.isFinite(s.lastSeen)){
-  const away = Math.min(OFFLINE_CAP_MS, Math.max(0, Date.now() - s.lastSeen));
+  const rawAway = Math.max(0, Date.now() - s.lastSeen);
+  const away = Math.min(OFFLINE_CAP_MS, rawAway);
   const cps = incomePerSecond();
   if (away > 60000 && cps > 0){
     const gain = cps * (away / 1000) * OFFLINE_RATE;
     s.coins += gain;
     s.lifetime += gain;
-    offlineReport = {ms:away, coins:gain};
+    offlineReport = {ms:rawAway, counted:away, coins:gain};
   }
 }
 s.lastSeen = Date.now();
@@ -2359,10 +2360,13 @@ function showOfflineReport(){
   offlineReport = null;
   if (!r) return;
   const mins = Math.max(1, Math.round(r.ms / 60000));
+  const countedMins = Math.max(1, Math.round(r.counted / 60000));
+  const capped = r.ms > r.counted + 60000;
   openModal(`<button class="x" data-close>✕</button><h3>Welcome back</h3>
     <p class="sub">You were away ${durationText(mins)}.</p>
     <div class="mut-preview"><span>Offline earnings</span><b class="gold">🪙 ${fmt(r.coins)}</b></div>
-    <div class="mut-preview"><span>Offline rate</span><b>50% · first 2 hr</b></div>
+    <div class="mut-preview"><span>Offline rate</span><b>50%</b></div>
+    <div class="mut-preview"><span>Time counted</span><b>${durationText(countedMins)}${capped ? ' (capped)' : ''}</b></div>
     <p class="hint" style="margin:6px 0 0">Already added to your coins. Your five equipped cards earned this while the game was closed.</p>
     <button class="btn primary wide" data-close>Collect</button>`);
 }
