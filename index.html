@@ -493,7 +493,7 @@ body.opening .stats{margin:7px 0 3px}
       <div><span class="eyebrow">Uncollected</span><b id="unclaimed">0</b></div>
     </div>
     <button class="btn primary wide" id="claimCoins" disabled>Collect coins</button>
-    <p class="hint" id="incomeNote" style="margin:7px 0 0">Income runs <b>only while this tab is open</b>. Close it and coins stop — your cards, coins and upgrade timers stay saved.</p>
+    <p class="hint" id="incomeNote" style="margin:7px 0 0">Income runs while the tab is open, and at <b>50% for up to 2 hours</b> while it's closed. Cards, coins and upgrade timers stay saved.</p>
   </section>
 
   <nav class="tabs" aria-label="Sections">
@@ -558,16 +558,16 @@ const I18N = {
   ru: ["Монеты","Карты","Паки","Экипировано","Доход карт","Не собрано","Забрать монеты","Выбрать пак","Лучший доступный","Как это работает","Цена","Карт за открытие","Пул","Диапазон дохода","Собрано","Быстрое открытие","Умная экипировка","Ваша коллекция","Полный набор","Экипировать пять лучших","Все","Улучшено","Просмотр","Экипировать","Снять","Лаборатория улучшений","Выбрать карту","Улучшить","В процессе","Нет активного улучшения","Летняя викторина","Уровни","Категории","Испытание","Начать","Подтвердить ответ","Играть снова","Выбрать другой режим","Топ-10 Дэнвилла","Ваше имя коллекционера","Сохранить","Сбросить сохранение","Язык","Отмена","Готово","монет/сек","Новые","Лучший доход","Редкость","Имя","Все главы","Все редкости","Показать ещё","Лаб","Викторина","Топ"]
 };
 const TPL = {
-  en: {"_openCta":"Open {0} — {1} coins","_openAgain":"Open again — {0} coins","_needMore":"Need {0} more coins.","_collectedN":"{0}/10 collected","_poolLine":"10-card pool · {0}/s","_card1":"1 card","_card5":"5 cards","_equipCount":"Equipped ({0}/5)","_collectedFive":"Collected {0}/10 · Five cards per open.","_collectedOne":"Collected {0}/10 · Only ONE card per open above 1B coins.","_showMoreN":"Show more ({0} left)","_revealSub":"Card {0} of {1} · tap the card to flip","_incomeNote":"Income runs <b>only while this tab is open</b>. Close it and coins stop — your cards, coins and upgrade timers stay saved.","_langNote":"Interface language. Card names and trivia questions stay in English."},
-  zh: {"_openCta":"开启 {0} — {1} 金币","_openAgain":"再次开启 — {0} 金币","_needMore":"还需要 {0} 金币。","_collectedN":"已收集 {0}/10","_poolLine":"10 张卡池 · {0}/秒","_card1":"1 张卡","_card5":"5 张卡","_equipCount":"已装备 ({0}/5)","_collectedFive":"已收集 {0}/10 · 每次开启 5 张卡。","_collectedOne":"已收集 {0}/10 · 价格超过 10 亿金币的卡包每次只给 1 张卡。","_showMoreN":"显示更多（还剩 {0}）","_revealSub":"第 {0} / {1} 张 · 点击卡牌翻开","_incomeNote":"收益<b>仅在当前标签页打开时</b>计算。关闭标签页后金币停止，但卡牌、金币和升级计时都会保留。","_langNote":"界面语言。卡牌名称和问答题仍为英文。"},
-  es: {"_openCta":"Abrir {0} — {1} monedas","_openAgain":"Abrir otra vez — {0} monedas","_needMore":"Faltan {0} monedas.","_collectedN":"{0}/10 coleccionadas","_poolLine":"Fondo de 10 cartas · {0}/s","_card1":"1 carta","_card5":"5 cartas","_equipCount":"Equipadas ({0}/5)","_collectedFive":"Coleccionadas {0}/10 · Cinco cartas por apertura.","_collectedOne":"Coleccionadas {0}/10 · Solo UNA carta por apertura por encima de 1000 millones de monedas.","_showMoreN":"Mostrar más ({0} restantes)","_revealSub":"Carta {0} de {1} · toca para girar","_incomeNote":"El ingreso corre <b>solo mientras esta pestaña está abierta</b>. Al cerrarla, las monedas se detienen; tus cartas, monedas y mejoras quedan guardadas.","_langNote":"Idioma de la interfaz. Los nombres de cartas y las preguntas siguen en inglés."},
-  it: {"_openCta":"Apri {0} — {1} monete","_openAgain":"Apri di nuovo — {0} monete","_needMore":"Servono altre {0} monete.","_collectedN":"{0}/10 collezionate","_poolLine":"Pool di 10 carte · {0}/s","_card1":"1 carta","_card5":"5 carte","_equipCount":"Equipaggiate ({0}/5)","_collectedFive":"Collezionate {0}/10 · Cinque carte per apertura.","_collectedOne":"Collezionate {0}/10 · Solo UNA carta per apertura sopra 1 miliardo di monete.","_showMoreN":"Mostra altri ({0} rimasti)","_revealSub":"Carta {0} di {1} · tocca per girare","_incomeNote":"Il guadagno continua <b>solo mentre questa scheda è aperta</b>. Chiudendola le monete si fermano; carte, monete e potenziamenti restano salvati.","_langNote":"Lingua dell'interfaccia. Nomi di carte e domande restano in inglese."},
-  fr: {"_openCta":"Ouvrir {0} — {1} pièces","_openAgain":"Rouvrir — {0} pièces","_needMore":"Il manque {0} pièces.","_collectedN":"{0}/10 collectionnées","_poolLine":"Réserve de 10 cartes · {0}/s","_card1":"1 carte","_card5":"5 cartes","_equipCount":"Équipées ({0}/5)","_collectedFive":"Collectionnées {0}/10 · Cinq cartes par ouverture.","_collectedOne":"Collectionnées {0}/10 · Une seule carte par ouverture au-delà d'un milliard de pièces.","_showMoreN":"Afficher plus ({0} restants)","_revealSub":"Carte {0} sur {1} · touchez pour retourner","_incomeNote":"Le revenu ne tourne <b>que lorsque cet onglet est ouvert</b>. Fermez-le et les pièces s'arrêtent ; vos cartes, pièces et améliorations restent sauvegardées.","_langNote":"Langue de l'interface. Les noms de cartes et les questions restent en anglais."},
-  ja: {"_openCta":"{0} を開く — {1} コイン","_openAgain":"もう一度開く — {0} コイン","_needMore":"あと {0} コイン必要です。","_collectedN":"{0}/10 収集済み","_poolLine":"10枚プール · {0}/秒","_card1":"1 枚","_card5":"5 枚","_equipCount":"装備中 ({0}/5)","_collectedFive":"収集済み {0}/10 · 1回に5枚。","_collectedOne":"収集済み {0}/10 · 10億コインを超えるパックは1回1枚のみ。","_showMoreN":"もっと見る（残り {0}）","_revealSub":"{1} 枚中 {0} 枚目 · タップでめくる","_incomeNote":"収入は<b>このタブを開いている間だけ</b>発生します。閉じるとコインは止まりますが、カード・コイン・アップグレードの進行は保存されます。","_langNote":"表示言語です。カード名とクイズ問題は英語のままです。"},
-  de: {"_openCta":"{0} öffnen — {1} Münzen","_openAgain":"Erneut öffnen — {0} Münzen","_needMore":"Es fehlen noch {0} Münzen.","_collectedN":"{0}/10 gesammelt","_poolLine":"10-Karten-Pool · {0}/s","_card1":"1 Karte","_card5":"5 Karten","_equipCount":"Ausgerüstet ({0}/5)","_collectedFive":"Gesammelt {0}/10 · Fünf Karten pro Öffnung.","_collectedOne":"Gesammelt {0}/10 · Oberhalb von 1 Mrd. Münzen nur EINE Karte pro Öffnung.","_showMoreN":"Mehr anzeigen ({0} übrig)","_revealSub":"Karte {0} von {1} · zum Umdrehen tippen","_incomeNote":"Einkommen läuft <b>nur, solange dieser Tab geöffnet ist</b>. Beim Schließen stoppen die Münzen; Karten, Münzen und Upgrades bleiben gespeichert.","_langNote":"Sprache der Oberfläche. Kartennamen und Quizfragen bleiben auf Englisch."},
-  pt: {"_openCta":"Abrir {0} — {1} moedas","_openAgain":"Abrir de novo — {0} moedas","_needMore":"Faltam {0} moedas.","_collectedN":"{0}/10 coletadas","_poolLine":"Pool de 10 cartas · {0}/s","_card1":"1 carta","_card5":"5 cartas","_equipCount":"Equipadas ({0}/5)","_collectedFive":"Coletadas {0}/10 · Cinco cartas por abertura.","_collectedOne":"Coletadas {0}/10 · Apenas UMA carta por abertura acima de 1 bilhão de moedas.","_showMoreN":"Mostrar mais ({0} restantes)","_revealSub":"Carta {0} de {1} · toque para virar","_incomeNote":"A renda só corre <b>enquanto esta aba está aberta</b>. Ao fechar, as moedas param; cartas, moedas e melhorias ficam salvas.","_langNote":"Idioma da interface. Nomes de cartas e perguntas continuam em inglês."},
-  ko: {"_openCta":"{0} 열기 — {1} 코인","_openAgain":"다시 열기 — {0} 코인","_needMore":"{0} 코인이 더 필요합니다.","_collectedN":"{0}/10 수집됨","_poolLine":"10장 풀 · {0}/초","_card1":"1장","_card5":"5장","_equipCount":"장착됨 ({0}/5)","_collectedFive":"수집됨 {0}/10 · 개봉당 5장.","_collectedOne":"수집됨 {0}/10 · 10억 코인을 넘는 팩은 개봉당 1장만.","_showMoreN":"더 보기 ({0}개 남음)","_revealSub":"{1}장 중 {0}번째 · 탭하여 뒤집기","_incomeNote":"수익은 <b>이 탭이 열려 있는 동안에만</b> 발생합니다. 탭을 닫으면 코인은 멈추지만 카드, 코인, 업그레이드는 저장됩니다.","_langNote":"인터페이스 언어입니다. 카드 이름과 퀴즈 문제는 영어로 유지됩니다."},
-  ru: {"_openCta":"Открыть {0} — {1} монет","_openAgain":"Открыть снова — {0} монет","_needMore":"Нужно ещё {0} монет.","_collectedN":"Собрано {0}/10","_poolLine":"Пул из 10 карт · {0}/с","_card1":"1 карта","_card5":"5 карт","_equipCount":"Экипировано ({0}/5)","_collectedFive":"Собрано {0}/10 · Пять карт за открытие.","_collectedOne":"Собрано {0}/10 · Выше 1 млрд монет — только ОДНА карта за открытие.","_showMoreN":"Показать ещё (осталось {0})","_revealSub":"Карта {0} из {1} · нажмите, чтобы открыть","_incomeNote":"Доход идёт <b>только пока эта вкладка открыта</b>. Закройте её — монеты остановятся, но карты, монеты и улучшения сохранятся.","_langNote":"Язык интерфейса. Названия карт и вопросы викторины остаются на английском."}
+  en: {"_openCta":"Open {0} — {1} coins","_openAgain":"Open again — {0} coins","_needMore":"Need {0} more coins.","_collectedN":"{0}/10 collected","_poolLine":"10-card pool · {0}/s","_card1":"1 card","_card5":"5 cards","_equipCount":"Equipped ({0}/5)","_collectedFive":"Collected {0}/10 · Five cards per open.","_collectedOne":"Collected {0}/10 · Only ONE card per open above 1B coins.","_showMoreN":"Show more ({0} left)","_revealSub":"Card {0} of {1} · tap the card to flip","_incomeNote":"Income runs while the tab is open, and at <b>50% for up to 2 hours</b> while it's closed. Cards, coins and upgrade timers stay saved.","_langNote":"Interface language. Card names and trivia questions stay in English."},
+  zh: {"_openCta":"开启 {0} — {1} 金币","_openAgain":"再次开启 — {0} 金币","_needMore":"还需要 {0} 金币。","_collectedN":"已收集 {0}/10","_poolLine":"10 张卡池 · {0}/秒","_card1":"1 张卡","_card5":"5 张卡","_equipCount":"已装备 ({0}/5)","_collectedFive":"已收集 {0}/10 · 每次开启 5 张卡。","_collectedOne":"已收集 {0}/10 · 价格超过 10 亿金币的卡包每次只给 1 张卡。","_showMoreN":"显示更多（还剩 {0}）","_revealSub":"第 {0} / {1} 张 · 点击卡牌翻开","_incomeNote":"标签页打开时正常计算收益；关闭后按 <b>50% 计算，最多 2 小时</b>。卡牌、金币和升级计时都会保留。","_langNote":"界面语言。卡牌名称和问答题仍为英文。"},
+  es: {"_openCta":"Abrir {0} — {1} monedas","_openAgain":"Abrir otra vez — {0} monedas","_needMore":"Faltan {0} monedas.","_collectedN":"{0}/10 coleccionadas","_poolLine":"Fondo de 10 cartas · {0}/s","_card1":"1 carta","_card5":"5 cartas","_equipCount":"Equipadas ({0}/5)","_collectedFive":"Coleccionadas {0}/10 · Cinco cartas por apertura.","_collectedOne":"Coleccionadas {0}/10 · Solo UNA carta por apertura por encima de 1000 millones de monedas.","_showMoreN":"Mostrar más ({0} restantes)","_revealSub":"Carta {0} de {1} · toca para girar","_incomeNote":"El ingreso corre con la pestaña abierta y al <b>50% hasta 2 horas</b> con ella cerrada. Cartas, monedas y mejoras quedan guardadas.","_langNote":"Idioma de la interfaz. Los nombres de cartas y las preguntas siguen en inglés."},
+  it: {"_openCta":"Apri {0} — {1} monete","_openAgain":"Apri di nuovo — {0} monete","_needMore":"Servono altre {0} monete.","_collectedN":"{0}/10 collezionate","_poolLine":"Pool di 10 carte · {0}/s","_card1":"1 carta","_card5":"5 carte","_equipCount":"Equipaggiate ({0}/5)","_collectedFive":"Collezionate {0}/10 · Cinque carte per apertura.","_collectedOne":"Collezionate {0}/10 · Solo UNA carta per apertura sopra 1 miliardo di monete.","_showMoreN":"Mostra altri ({0} rimasti)","_revealSub":"Carta {0} di {1} · tocca per girare","_incomeNote":"Il guadagno corre a scheda aperta e al <b>50% per un massimo di 2 ore</b> a scheda chiusa. Carte, monete e potenziamenti restano salvati.","_langNote":"Lingua dell'interfaccia. Nomi di carte e domande restano in inglese."},
+  fr: {"_openCta":"Ouvrir {0} — {1} pièces","_openAgain":"Rouvrir — {0} pièces","_needMore":"Il manque {0} pièces.","_collectedN":"{0}/10 collectionnées","_poolLine":"Réserve de 10 cartes · {0}/s","_card1":"1 carte","_card5":"5 cartes","_equipCount":"Équipées ({0}/5)","_collectedFive":"Collectionnées {0}/10 · Cinq cartes par ouverture.","_collectedOne":"Collectionnées {0}/10 · Une seule carte par ouverture au-delà d'un milliard de pièces.","_showMoreN":"Afficher plus ({0} restants)","_revealSub":"Carte {0} sur {1} · touchez pour retourner","_incomeNote":"Le revenu tourne onglet ouvert, et à <b>50 % pendant 2 heures maximum</b> onglet fermé. Cartes, pièces et améliorations restent sauvegardées.","_langNote":"Langue de l'interface. Les noms de cartes et les questions restent en anglais."},
+  ja: {"_openCta":"{0} を開く — {1} コイン","_openAgain":"もう一度開く — {0} コイン","_needMore":"あと {0} コイン必要です。","_collectedN":"{0}/10 収集済み","_poolLine":"10枚プール · {0}/秒","_card1":"1 枚","_card5":"5 枚","_equipCount":"装備中 ({0}/5)","_collectedFive":"収集済み {0}/10 · 1回に5枚。","_collectedOne":"収集済み {0}/10 · 10億コインを超えるパックは1回1枚のみ。","_showMoreN":"もっと見る（残り {0}）","_revealSub":"{1} 枚中 {0} 枚目 · タップでめくる","_incomeNote":"タブを開いている間は通常どおり、閉じている間は<b>最大2時間まで50%</b>で貯まります。カード・コイン・アップグレードは保存されます。","_langNote":"表示言語です。カード名とクイズ問題は英語のままです。"},
+  de: {"_openCta":"{0} öffnen — {1} Münzen","_openAgain":"Erneut öffnen — {0} Münzen","_needMore":"Es fehlen noch {0} Münzen.","_collectedN":"{0}/10 gesammelt","_poolLine":"10-Karten-Pool · {0}/s","_card1":"1 Karte","_card5":"5 Karten","_equipCount":"Ausgerüstet ({0}/5)","_collectedFive":"Gesammelt {0}/10 · Fünf Karten pro Öffnung.","_collectedOne":"Gesammelt {0}/10 · Oberhalb von 1 Mrd. Münzen nur EINE Karte pro Öffnung.","_showMoreN":"Mehr anzeigen ({0} übrig)","_revealSub":"Karte {0} von {1} · zum Umdrehen tippen","_incomeNote":"Einkommen läuft bei geöffnetem Tab — und <b>50 % für bis zu 2 Stunden</b>, wenn er geschlossen ist. Karten, Münzen und Upgrades bleiben gespeichert.","_langNote":"Sprache der Oberfläche. Kartennamen und Quizfragen bleiben auf Englisch."},
+  pt: {"_openCta":"Abrir {0} — {1} moedas","_openAgain":"Abrir de novo — {0} moedas","_needMore":"Faltam {0} moedas.","_collectedN":"{0}/10 coletadas","_poolLine":"Pool de 10 cartas · {0}/s","_card1":"1 carta","_card5":"5 cartas","_equipCount":"Equipadas ({0}/5)","_collectedFive":"Coletadas {0}/10 · Cinco cartas por abertura.","_collectedOne":"Coletadas {0}/10 · Apenas UMA carta por abertura acima de 1 bilhão de moedas.","_showMoreN":"Mostrar mais ({0} restantes)","_revealSub":"Carta {0} de {1} · toque para virar","_incomeNote":"A renda corre com a aba aberta e a <b>50% por até 2 horas</b> com ela fechada. Cartas, moedas e melhorias ficam salvas.","_langNote":"Idioma da interface. Nomes de cartas e perguntas continuam em inglês."},
+  ko: {"_openCta":"{0} 열기 — {1} 코인","_openAgain":"다시 열기 — {0} 코인","_needMore":"{0} 코인이 더 필요합니다.","_collectedN":"{0}/10 수집됨","_poolLine":"10장 풀 · {0}/초","_card1":"1장","_card5":"5장","_equipCount":"장착됨 ({0}/5)","_collectedFive":"수집됨 {0}/10 · 개봉당 5장.","_collectedOne":"수집됨 {0}/10 · 10억 코인을 넘는 팩은 개봉당 1장만.","_showMoreN":"더 보기 ({0}개 남음)","_revealSub":"{1}장 중 {0}번째 · 탭하여 뒤집기","_incomeNote":"탭이 열려 있으면 정상, 닫혀 있으면 <b>최대 2시간까지 50%</b>로 쌓입니다. 카드, 코인, 업그레이드는 저장됩니다.","_langNote":"인터페이스 언어입니다. 카드 이름과 퀴즈 문제는 영어로 유지됩니다."},
+  ru: {"_openCta":"Открыть {0} — {1} монет","_openAgain":"Открыть снова — {0} монет","_needMore":"Нужно ещё {0} монет.","_collectedN":"Собрано {0}/10","_poolLine":"Пул из 10 карт · {0}/с","_card1":"1 карта","_card5":"5 карт","_equipCount":"Экипировано ({0}/5)","_collectedFive":"Собрано {0}/10 · Пять карт за открытие.","_collectedOne":"Собрано {0}/10 · Выше 1 млрд монет — только ОДНА карта за открытие.","_showMoreN":"Показать ещё (осталось {0})","_revealSub":"Карта {0} из {1} · нажмите, чтобы открыть","_incomeNote":"Доход идёт при открытой вкладке и <b>50% до 2 часов</b> при закрытой. Карты, монеты и улучшения сохраняются.","_langNote":"Язык интерфейса. Названия карт и вопросы викторины остаются на английском."}
 };
 const PH = {
   en:['Search 1,000 cards','Search your collection'],
@@ -1583,6 +1583,7 @@ function rid(){ return Date.now().toString(36) + '-' + Math.random().toString(36
 const DEF = {
   coins:120, cards:[], packsOpened:0, equipped:[], lifetime:120, unclaimed:0,
   upgrade:null, upgrades:[], notice:'', sound:false, fast:false, smart:true, lang:null,
+  lastSeen:0,
   playerName:'You', rivals:null, asked:{}, gStreak:0,
   level:'Easy', category:'Characters', triviaMode:'level', q:null, answer:null, run:null, message:'', msgKind:'',
   chapter:0, pack:0, cardChapter:'all', page:'packs', labSearch:'', search:'', cfilter:'all', rfilter:'all', sort:'new', limit:24
@@ -1641,11 +1642,26 @@ const upgradeMinutes = c => (packOf(c).wait || 15) + 2 * c.t;
 const upgradeCost = c => 2 * packOf(c).cost;
 const sellPrice = c => Math.max(1, Math.floor(packOf(c).cost * 0.1));
 
+/* offline earnings: 50% rate, first two hours after the tab was closed */
+const OFFLINE_RATE = 0.5, OFFLINE_CAP_MS = 2 * 60 * 60 * 1000;
+let offlineReport = null;
+if (Number.isFinite(s.lastSeen)){
+  const away = Math.min(OFFLINE_CAP_MS, Math.max(0, Date.now() - s.lastSeen));
+  const cps = incomePerSecond();
+  if (away > 60000 && cps > 0){
+    const gain = cps * (away / 1000) * OFFLINE_RATE;
+    s.coins += gain;
+    s.lifetime += gain;
+    offlineReport = {ms:away, coins:gain};
+  }
+}
+s.lastSeen = Date.now();
+
 function save(){
   try {
     localStorage.setItem(KEY, JSON.stringify({
       coins:s.coins, cards:s.cards, packsOpened:s.packsOpened, equipped:s.equipped,
-      lifetime:s.lifetime, unclaimed:s.unclaimed, upgrades:s.upgrades, notice:s.notice,
+      lifetime:s.lifetime, unclaimed:s.unclaimed, upgrades:s.upgrades, notice:s.notice, lastSeen:Date.now(),
       sound:s.sound, fast:s.fast, smart:s.smart, lang:s.lang, playerName:s.playerName, rivals:s.rivals,
       asked:s.asked, gStreak:s.gStreak, level:s.level, category:s.category, triviaMode:s.triviaMode,
       chapter:s.chapter, pack:s.pack, cardChapter:s.cardChapter, sort:s.sort, limit:s.limit
@@ -2338,6 +2354,18 @@ function openUpgrade(id){
 /* =========================================================
    SUMMARY
    ========================================================= */
+function showOfflineReport(){
+  const r = offlineReport;
+  offlineReport = null;
+  if (!r) return;
+  const mins = Math.max(1, Math.round(r.ms / 60000));
+  openModal(`<button class="x" data-close>✕</button><h3>Welcome back</h3>
+    <p class="sub">You were away ${durationText(mins)}.</p>
+    <div class="mut-preview"><span>Offline earnings</span><b class="gold">🪙 ${fmt(r.coins)}</b></div>
+    <div class="mut-preview"><span>Offline rate</span><b>50% · first 2 hr</b></div>
+    <p class="hint" style="margin:6px 0 0">Already added to your coins. Your five equipped cards earned this while the game was closed.</p>
+    <button class="btn primary wide" data-close>Collect</button>`);
+}
 function openSummary(cards, p, again){
   const can = s.coins >= p.cost;
   openModal(`<button class="x" data-close>✕</button><h3>${p.icon} ${packName(p)}</h3>
@@ -2565,6 +2593,7 @@ if (s.lang !== 'en') localizeDOM(document.body);
 document.getElementById('langBtn').onclick = openLangModal;
 setInterval(tick, 250);
 setInterval(save, 5000);
+if (offlineReport) setTimeout(showOfflineReport, 450);
 </script>
 </body>
 </html>
