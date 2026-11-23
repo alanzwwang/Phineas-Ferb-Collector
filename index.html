@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#070d18">
 <title>Phineas and Ferb — Summer Collector 2</title>
-<meta name="description" content="A fan-made Phineas and Ferb collector with 100 packs, 1,000 cards, live-only income and a 1,000,000-coin trivia gauntlet.">
+<meta name="description" content="A fan-made Phineas and Ferb collector with 10,000 packs, 100,000 cards, live-only income and a 1,000,000-coin trivia gauntlet.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230b1526'/><text y='.92em' x='50' text-anchor='middle' font-size='64'>🏖️</text></svg>">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -130,6 +130,12 @@ p{margin:0 0 8px}
 .chapter-head .sub{margin:0}
 
 /* pack grid */
+.pager{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 9px;
+  font-size:10.5px;color:#a9bcd8;letter-spacing:.02em}
+.pager .pg{border:1px solid rgba(120,180,220,.3);background:rgba(255,255,255,.05);color:#d7e6ff;
+  border-radius:8px;padding:6px 11px;font-size:10px;font-weight:900}
+.pager .pg:disabled{opacity:.35;cursor:not-allowed}
+.pager .pg:hover:not(:disabled){background:rgba(84,232,206,.14);border-color:rgba(84,232,206,.45);color:#9df5e0}
 .packs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
 .pick{position:relative;text-align:left;border:1px solid rgba(255,255,255,.1);border-radius:15px;padding:9px;
   background:#0b1526;display:flex;flex-direction:column;gap:3px;overflow:hidden}
@@ -519,7 +525,7 @@ body.opening .stats{margin:7px 0 3px}
     <div class="sun"></div>
     <div class="logo"><span>PHINEAS</span><i>&amp;</i><span>FERB</span></div>
     <div class="kicker">SUMMER COLLECTOR 2</div>
-    <p class="tag">100 packs · 1,000 cards · a 1,000,000,000,000-coin finish</p>
+    <p class="tag">10,000 packs · 100,000 cards · a quintillion-coin finish</p>
     <button class="sound" id="soundBtn" aria-label="Toggle sound">🔈</button>
     <button class="sound lang" id="langBtn" aria-label="Language" title="Language">🌐</button>
   </header>
@@ -562,7 +568,7 @@ body.opening .stats{margin:7px 0 3px}
 <script>
 /* =========================================================
    PHINEAS AND FERB — SUMMER COLLECTOR 2
-   One file. 100 packs, 1,000 cards, live-only income.
+   One file. 10,000 packs, 100,000 cards, live-only income.
    ========================================================= */
 
 const RARITY = ['Common','Uncommon','Rare','Ultra Rare','Secret Rare'];
@@ -571,29 +577,34 @@ const RSHADE = ['#dbe3ef','#d6f4e5','#c8e2ff','#eed8ff','#fff0bb'];
 const TMULT = [1, 1.25, 1.6, 2.1, 2.8];
 const MAX_EQ = 5;
 const KEY = 'pf_summer_collector_v2';
-/* release version + what this build adds (bump both on every update) */
-const VERSION = '3.1.2';
+/* release version + what this build adds (bump both on every update)
+   every release uses a three-part number: major.feature.patch */
+const VERSION = '4.0.0';
 const RELEASES = [
-  ['1.0', 'Base game: 100 packs · 1,000 cards'],
-  ['1.1', 'Ten languages + localized pack names'],
-  ['1.2', 'Standalone single-file fix'],
-  ['2.0', 'New characters, star 1T pack, selling'],
-  ['2.1', '990 brand-new characters with unique art'],
-  ['2.2', 'Pack pull rule: 5 cards or 1'],
-  ['2.3', 'Multiple upgrades at once'],
-  ['2.4', 'Offline earnings'],
-  ['2.5', 'Unlimited offline tiers 50 / 25 / 10'],
-  ['2.6', '500B card cutoff'],
-  ['2.7', '1T-only single-card pack'],
-  ['2.8', 'Trillion Club single-card chapter'],
-  ['3.0', 'Update popups'],
-  ['3.1', 'Gold + seafoam popup styling'],
+  ['1.0.0', 'Base game: 100 packs · 1,000 cards'],
+  ['1.1.0', 'Ten languages + localized pack names'],
+  ['1.2.0', 'Standalone single-file fix'],
+  ['2.0.0', 'New characters, star 1T pack, selling'],
+  ['2.1.0', '990 brand-new characters with unique art'],
+  ['2.2.0', 'Pack pull rule: 5 cards or 1'],
+  ['2.3.0', 'Multiple upgrades at once'],
+  ['2.4.0', 'Offline earnings'],
+  ['2.5.0', 'Unlimited offline tiers 50 / 25 / 10'],
+  ['2.6.0', '500B card cutoff'],
+  ['2.7.0', '1T-only single-card pack'],
+  ['2.8.0', 'Trillion Club single-card chapter'],
+  ['3.0.0', 'Update popups'],
+  ['3.1.0', 'Gold + seafoam popup styling'],
   ['3.1.1', 'One free lab skip for every player'],
-  ['3.1.2', 'Full update history in this card']
+  ['3.1.2', 'Full update history in this card'],
+  ['4.0.0', '10,000 packs · 100,000 new characters · quintillion prices']
 ];
 const WHATS_NEW = [
-  'Free <b>⚡ lab skip</b> for everyone — finish one running upgrade instantly',
-  'This card now lists <b>every update</b> since launch'
+  '<b>10,000 packs</b> and <b>100,000</b> brand-new characters',
+  'Prices now climb to <b>1 quintillion</b> (1e18) coins',
+  'Packs above <b>1 quadrillion</b> give <b>1 card</b>; everything below gives 5',
+  'Every pack has ten original characters with their own art and colour',
+  'Version numbers are now three-part for every past release'
 ];
 const INK = '#121a2c';
 
@@ -626,16 +637,16 @@ const I18N = {
   ru: ["Монеты","Карты","Паки","Экипировано","Доход карт","Не собрано","Забрать монеты","Выбрать пак","Лучший доступный","Как это работает","Цена","Карт за открытие","Пул","Диапазон дохода","Собрано","Быстрое открытие","Умная экипировка","Ваша коллекция","Полный набор","Экипировать пять лучших","Все","Улучшено","Просмотр","Экипировать","Снять","Лаборатория улучшений","Выбрать карту","Улучшить","В процессе","Нет активного улучшения","Летняя викторина","Уровни","Категории","Испытание","Начать","Подтвердить ответ","Играть снова","Выбрать другой режим","Топ-10 Дэнвилла","Ваше имя коллекционера","Сохранить","Сбросить сохранение","Язык","Отмена","Готово","монет/сек","Новые","Лучший доход","Редкость","Имя","Все главы","Все редкости","Показать ещё","Лаб","Викторина","Топ"]
 };
 const TPL = {
-  en: {"_openCta":"Open {0} — {1} coins","_openAgain":"Open again — {0} coins","_needMore":"Need {0} more coins.","_collectedN":"{0}/10 collected","_poolLine":"10-card pool · {0}/s","_card1":"1 card","_card5":"5 cards","_equipCount":"Equipped ({0}/5)","_collectedFive":"Collected {0}/10 · Five cards per open.","_collectedOne":"Collected {0}/10 · Only ONE card per open in the Trillion Club.","_showMoreN":"Show more ({0} left)","_revealSub":"Card {0} of {1} · tap the card to flip","_incomeNote":"Income runs while the tab is open. While it's closed: <b>50% for 2 hr</b>, <b>25% up to 24 hr</b>, then <b>10%</b> with no limit. Cards, coins and timers stay saved.","_langNote":"Interface language. Card names and trivia questions stay in English."},
-  zh: {"_openCta":"开启 {0} — {1} 金币","_openAgain":"再次开启 — {0} 金币","_needMore":"还需要 {0} 金币。","_collectedN":"已收集 {0}/10","_poolLine":"10 张卡池 · {0}/秒","_card1":"1 张卡","_card5":"5 张卡","_equipCount":"已装备 ({0}/5)","_collectedFive":"已收集 {0}/10 · 每次开启 5 张卡。","_collectedOne":"已收集 {0}/10 · 万亿俱乐部每次只给 1 张卡。","_showMoreN":"显示更多（还剩 {0}）","_revealSub":"第 {0} / {1} 张 · 点击卡牌翻开","_incomeNote":"标签页打开时正常计算收益。关闭后：<b>前 2 小时 50%</b>，<b>24 小时内 25%</b>，之后 <b>10%</b>，没有上限。卡牌、金币和计时都会保留。","_langNote":"界面语言。卡牌名称和问答题仍为英文。"},
-  es: {"_openCta":"Abrir {0} — {1} monedas","_openAgain":"Abrir otra vez — {0} monedas","_needMore":"Faltan {0} monedas.","_collectedN":"{0}/10 coleccionadas","_poolLine":"Fondo de 10 cartas · {0}/s","_card1":"1 carta","_card5":"5 cartas","_equipCount":"Equipadas ({0}/5)","_collectedFive":"Coleccionadas {0}/10 · Cinco cartas por apertura.","_collectedOne":"Coleccionadas {0}/10 · Solo UNA carta por apertura en el Trillion Club.","_showMoreN":"Mostrar más ({0} restantes)","_revealSub":"Carta {0} de {1} · toca para girar","_incomeNote":"El ingreso corre con la pestaña abierta. Con ella cerrada: <b>50% las primeras 2 h</b>, <b>25% hasta 24 h</b> y luego <b>10%</b> sin límite. Cartas, monedas y contadores quedan guardados.","_langNote":"Idioma de la interfaz. Los nombres de cartas y las preguntas siguen en inglés."},
-  it: {"_openCta":"Apri {0} — {1} monete","_openAgain":"Apri di nuovo — {0} monete","_needMore":"Servono altre {0} monete.","_collectedN":"{0}/10 collezionate","_poolLine":"Pool di 10 carte · {0}/s","_card1":"1 carta","_card5":"5 carte","_equipCount":"Equipaggiate ({0}/5)","_collectedFive":"Collezionate {0}/10 · Cinque carte per apertura.","_collectedOne":"Collezionate {0}/10 · Solo UNA carta per apertura nel Trillion Club.","_showMoreN":"Mostra altri ({0} rimasti)","_revealSub":"Carta {0} di {1} · tocca per girare","_incomeNote":"Il guadagno corre a scheda aperta. A scheda chiusa: <b>50% per le prime 2 ore</b>, <b>25% fino a 24 ore</b>, poi <b>10%</b> senza limite. Carte, monete e timer restano salvati.","_langNote":"Lingua dell'interfaccia. Nomi di carte e domande restano in inglese."},
-  fr: {"_openCta":"Ouvrir {0} — {1} pièces","_openAgain":"Rouvrir — {0} pièces","_needMore":"Il manque {0} pièces.","_collectedN":"{0}/10 collectionnées","_poolLine":"Réserve de 10 cartes · {0}/s","_card1":"1 carte","_card5":"5 cartes","_equipCount":"Équipées ({0}/5)","_collectedFive":"Collectionnées {0}/10 · Cinq cartes par ouverture.","_collectedOne":"Collectionnées {0}/10 · Une seule carte par ouverture dans le Trillion Club.","_showMoreN":"Afficher plus ({0} restants)","_revealSub":"Carte {0} sur {1} · touchez pour retourner","_incomeNote":"Le revenu tourne onglet ouvert. Onglet fermé : <b>50 % les 2 premières heures</b>, <b>25 % jusqu'à 24 heures</b>, puis <b>10 %</b> sans limite. Cartes, pièces et minuteries restent sauvegardées.","_langNote":"Langue de l'interface. Les noms de cartes et les questions restent en anglais."},
-  ja: {"_openCta":"{0} を開く — {1} コイン","_openAgain":"もう一度開く — {0} コイン","_needMore":"あと {0} コイン必要です。","_collectedN":"{0}/10 収集済み","_poolLine":"10枚プール · {0}/秒","_card1":"1 枚","_card5":"5 枚","_equipCount":"装備中 ({0}/5)","_collectedFive":"収集済み {0}/10 · 1回に5枚。","_collectedOne":"収集済み {0}/10 · 兆クラブは1回1枚のみ。","_showMoreN":"もっと見る（残り {0}）","_revealSub":"{1} 枚中 {0} 枚目 · タップでめくる","_incomeNote":"タブを開いている間は通常どおり。閉じている間は<b>最初の2時間50%</b>、<b>24時間まで25%</b>、その後は<b>10%</b>で上限なし。カード・コイン・タイマーは保存されます。","_langNote":"表示言語です。カード名とクイズ問題は英語のままです。"},
-  de: {"_openCta":"{0} öffnen — {1} Münzen","_openAgain":"Erneut öffnen — {0} Münzen","_needMore":"Es fehlen noch {0} Münzen.","_collectedN":"{0}/10 gesammelt","_poolLine":"10-Karten-Pool · {0}/s","_card1":"1 Karte","_card5":"5 Karten","_equipCount":"Ausgerüstet ({0}/5)","_collectedFive":"Gesammelt {0}/10 · Fünf Karten pro Öffnung.","_collectedOne":"Gesammelt {0}/10 · Im Trillion Club nur EINE Karte pro Öffnung.","_showMoreN":"Mehr anzeigen ({0} übrig)","_revealSub":"Karte {0} von {1} · zum Umdrehen tippen","_incomeNote":"Einkommen läuft bei geöffnetem Tab. Bei geschlossenem Tab: <b>50 % für die ersten 2 Std.</b>, <b>25 % bis 24 Std.</b>, danach <b>10 %</b> ohne Limit. Karten, Münzen und Timer bleiben gespeichert.","_langNote":"Sprache der Oberfläche. Kartennamen und Quizfragen bleiben auf Englisch."},
-  pt: {"_openCta":"Abrir {0} — {1} moedas","_openAgain":"Abrir de novo — {0} moedas","_needMore":"Faltam {0} moedas.","_collectedN":"{0}/10 coletadas","_poolLine":"Pool de 10 cartas · {0}/s","_card1":"1 carta","_card5":"5 cartas","_equipCount":"Equipadas ({0}/5)","_collectedFive":"Coletadas {0}/10 · Cinco cartas por abertura.","_collectedOne":"Coletadas {0}/10 · Apenas UMA carta por abertura no Trillion Club.","_showMoreN":"Mostrar mais ({0} restantes)","_revealSub":"Carta {0} de {1} · toque para virar","_incomeNote":"A renda corre com a aba aberta. Com ela fechada: <b>50% nas primeiras 2 h</b>, <b>25% até 24 h</b> e depois <b>10%</b> sem limite. Cartas, moedas e cronômetros ficam salvos.","_langNote":"Idioma da interface. Nomes de cartas e perguntas continuam em inglês."},
-  ko: {"_openCta":"{0} 열기 — {1} 코인","_openAgain":"다시 열기 — {0} 코인","_needMore":"{0} 코인이 더 필요합니다.","_collectedN":"{0}/10 수집됨","_poolLine":"10장 풀 · {0}/초","_card1":"1장","_card5":"5장","_equipCount":"장착됨 ({0}/5)","_collectedFive":"수집됨 {0}/10 · 개봉당 5장.","_collectedOne":"수집됨 {0}/10 · 조 클럽은 개봉당 1장만.","_showMoreN":"더 보기 ({0}개 남음)","_revealSub":"{1}장 중 {0}번째 · 탭하여 뒤집기","_incomeNote":"탭이 열려 있으면 정상입니다. 닫혀 있으면 <b>처음 2시간 50%</b>, <b>24시간까지 25%</b>, 그 뒤로는 <b>10%</b>로 제한 없이 쌓입니다. 카드, 코인, 타이머는 저장됩니다.","_langNote":"인터페이스 언어입니다. 카드 이름과 퀴즈 문제는 영어로 유지됩니다."},
-  ru: {"_openCta":"Открыть {0} — {1} монет","_openAgain":"Открыть снова — {0} монет","_needMore":"Нужно ещё {0} монет.","_collectedN":"Собрано {0}/10","_poolLine":"Пул из 10 карт · {0}/с","_card1":"1 карта","_card5":"5 карт","_equipCount":"Экипировано ({0}/5)","_collectedFive":"Собрано {0}/10 · Пять карт за открытие.","_collectedOne":"Собрано {0}/10 · В Trillion Club — только ОДНА карта за открытие.","_showMoreN":"Показать ещё (осталось {0})","_revealSub":"Карта {0} из {1} · нажмите, чтобы открыть","_incomeNote":"Доход идёт при открытой вкладке. При закрытой: <b>50% первые 2 ч</b>, <b>25% до 24 ч</b>, затем <b>10%</b> без ограничений. Карты, монеты и таймеры сохраняются.","_langNote":"Язык интерфейса. Названия карт и вопросы викторины остаются на английском."}
+  en: {"_openCta":"Open {0} — {1} coins","_openAgain":"Open again — {0} coins","_needMore":"Need {0} more coins.","_collectedN":"{0}/10 collected","_poolLine":"10-card pool · {0}/s","_card1":"1 card","_card5":"5 cards","_equipCount":"Equipped ({0}/5)","_collectedFive":"Collected {0}/10 · Five cards per open.","_collectedOne":"Collected {0}/10 · Only ONE card per open above 1 quadrillion coins.","_showMoreN":"Show more ({0} left)","_revealSub":"Card {0} of {1} · tap the card to flip","_incomeNote":"Income runs while the tab is open. While it's closed: <b>50% for 2 hr</b>, <b>25% up to 24 hr</b>, then <b>10%</b> with no limit. Cards, coins and timers stay saved.","_langNote":"Interface language. Card names and trivia questions stay in English."},
+  zh: {"_openCta":"开启 {0} — {1} 金币","_openAgain":"再次开启 — {0} 金币","_needMore":"还需要 {0} 金币。","_collectedN":"已收集 {0}/10","_poolLine":"10 张卡池 · {0}/秒","_card1":"1 张卡","_card5":"5 张卡","_equipCount":"已装备 ({0}/5)","_collectedFive":"已收集 {0}/10 · 每次开启 5 张卡。","_collectedOne":"已收集 {0}/10 · 价格超过 1 千万亿金币的卡包每次只给 1 张卡。","_showMoreN":"显示更多（还剩 {0}）","_revealSub":"第 {0} / {1} 张 · 点击卡牌翻开","_incomeNote":"标签页打开时正常计算收益。关闭后：<b>前 2 小时 50%</b>，<b>24 小时内 25%</b>，之后 <b>10%</b>，没有上限。卡牌、金币和计时都会保留。","_langNote":"界面语言。卡牌名称和问答题仍为英文。"},
+  es: {"_openCta":"Abrir {0} — {1} monedas","_openAgain":"Abrir otra vez — {0} monedas","_needMore":"Faltan {0} monedas.","_collectedN":"{0}/10 coleccionadas","_poolLine":"Fondo de 10 cartas · {0}/s","_card1":"1 carta","_card5":"5 cartas","_equipCount":"Equipadas ({0}/5)","_collectedFive":"Coleccionadas {0}/10 · Cinco cartas por apertura.","_collectedOne":"Coleccionadas {0}/10 · Solo UNA carta por apertura por encima de 1 cuatrillón de monedas.","_showMoreN":"Mostrar más ({0} restantes)","_revealSub":"Carta {0} de {1} · toca para girar","_incomeNote":"El ingreso corre con la pestaña abierta. Con ella cerrada: <b>50% las primeras 2 h</b>, <b>25% hasta 24 h</b> y luego <b>10%</b> sin límite. Cartas, monedas y contadores quedan guardados.","_langNote":"Idioma de la interfaz. Los nombres de cartas y las preguntas siguen en inglés."},
+  it: {"_openCta":"Apri {0} — {1} monete","_openAgain":"Apri di nuovo — {0} monete","_needMore":"Servono altre {0} monete.","_collectedN":"{0}/10 collezionate","_poolLine":"Pool di 10 carte · {0}/s","_card1":"1 carta","_card5":"5 carte","_equipCount":"Equipaggiate ({0}/5)","_collectedFive":"Collezionate {0}/10 · Cinque carte per apertura.","_collectedOne":"Collezionate {0}/10 · Solo UNA carta per apertura sopra 1 quadrilione di monete.","_showMoreN":"Mostra altri ({0} rimasti)","_revealSub":"Carta {0} di {1} · tocca per girare","_incomeNote":"Il guadagno corre a scheda aperta. A scheda chiusa: <b>50% per le prime 2 ore</b>, <b>25% fino a 24 ore</b>, poi <b>10%</b> senza limite. Carte, monete e timer restano salvati.","_langNote":"Lingua dell'interfaccia. Nomi di carte e domande restano in inglese."},
+  fr: {"_openCta":"Ouvrir {0} — {1} pièces","_openAgain":"Rouvrir — {0} pièces","_needMore":"Il manque {0} pièces.","_collectedN":"{0}/10 collectionnées","_poolLine":"Réserve de 10 cartes · {0}/s","_card1":"1 carte","_card5":"5 cartes","_equipCount":"Équipées ({0}/5)","_collectedFive":"Collectionnées {0}/10 · Cinq cartes par ouverture.","_collectedOne":"Collectionnées {0}/10 · Une seule carte par ouverture au-delà de 1 quadrillion de pièces.","_showMoreN":"Afficher plus ({0} restants)","_revealSub":"Carte {0} sur {1} · touchez pour retourner","_incomeNote":"Le revenu tourne onglet ouvert. Onglet fermé : <b>50 % les 2 premières heures</b>, <b>25 % jusqu'à 24 heures</b>, puis <b>10 %</b> sans limite. Cartes, pièces et minuteries restent sauvegardées.","_langNote":"Langue de l'interface. Les noms de cartes et les questions restent en anglais."},
+  ja: {"_openCta":"{0} を開く — {1} コイン","_openAgain":"もう一度開く — {0} コイン","_needMore":"あと {0} コイン必要です。","_collectedN":"{0}/10 収集済み","_poolLine":"10枚プール · {0}/秒","_card1":"1 枚","_card5":"5 枚","_equipCount":"装備中 ({0}/5)","_collectedFive":"収集済み {0}/10 · 1回に5枚。","_collectedOne":"収集済み {0}/10 · 1000兆コインを超えるパックは1回1枚のみ。","_showMoreN":"もっと見る（残り {0}）","_revealSub":"{1} 枚中 {0} 枚目 · タップでめくる","_incomeNote":"タブを開いている間は通常どおり。閉じている間は<b>最初の2時間50%</b>、<b>24時間まで25%</b>、その後は<b>10%</b>で上限なし。カード・コイン・タイマーは保存されます。","_langNote":"表示言語です。カード名とクイズ問題は英語のままです。"},
+  de: {"_openCta":"{0} öffnen — {1} Münzen","_openAgain":"Erneut öffnen — {0} Münzen","_needMore":"Es fehlen noch {0} Münzen.","_collectedN":"{0}/10 gesammelt","_poolLine":"10-Karten-Pool · {0}/s","_card1":"1 Karte","_card5":"5 Karten","_equipCount":"Ausgerüstet ({0}/5)","_collectedFive":"Gesammelt {0}/10 · Fünf Karten pro Öffnung.","_collectedOne":"Gesammelt {0}/10 · Oberhalb von 1 Billiarde Münzen nur EINE Karte pro Öffnung.","_showMoreN":"Mehr anzeigen ({0} übrig)","_revealSub":"Karte {0} von {1} · zum Umdrehen tippen","_incomeNote":"Einkommen läuft bei geöffnetem Tab. Bei geschlossenem Tab: <b>50 % für die ersten 2 Std.</b>, <b>25 % bis 24 Std.</b>, danach <b>10 %</b> ohne Limit. Karten, Münzen und Timer bleiben gespeichert.","_langNote":"Sprache der Oberfläche. Kartennamen und Quizfragen bleiben auf Englisch."},
+  pt: {"_openCta":"Abrir {0} — {1} moedas","_openAgain":"Abrir de novo — {0} moedas","_needMore":"Faltam {0} moedas.","_collectedN":"{0}/10 coletadas","_poolLine":"Pool de 10 cartas · {0}/s","_card1":"1 carta","_card5":"5 cartas","_equipCount":"Equipadas ({0}/5)","_collectedFive":"Coletadas {0}/10 · Cinco cartas por abertura.","_collectedOne":"Coletadas {0}/10 · Apenas UMA carta por abertura acima de 1 quatrilhão de moedas.","_showMoreN":"Mostrar mais ({0} restantes)","_revealSub":"Carta {0} de {1} · toque para virar","_incomeNote":"A renda corre com a aba aberta. Com ela fechada: <b>50% nas primeiras 2 h</b>, <b>25% até 24 h</b> e depois <b>10%</b> sem limite. Cartas, moedas e cronômetros ficam salvos.","_langNote":"Idioma da interface. Nomes de cartas e perguntas continuam em inglês."},
+  ko: {"_openCta":"{0} 열기 — {1} 코인","_openAgain":"다시 열기 — {0} 코인","_needMore":"{0} 코인이 더 필요합니다.","_collectedN":"{0}/10 수집됨","_poolLine":"10장 풀 · {0}/초","_card1":"1장","_card5":"5장","_equipCount":"장착됨 ({0}/5)","_collectedFive":"수집됨 {0}/10 · 개봉당 5장.","_collectedOne":"수집됨 {0}/10 · 1000조 코인을 넘는 팩은 개봉당 1장만.","_showMoreN":"더 보기 ({0}개 남음)","_revealSub":"{1}장 중 {0}번째 · 탭하여 뒤집기","_incomeNote":"탭이 열려 있으면 정상입니다. 닫혀 있으면 <b>처음 2시간 50%</b>, <b>24시간까지 25%</b>, 그 뒤로는 <b>10%</b>로 제한 없이 쌓입니다. 카드, 코인, 타이머는 저장됩니다.","_langNote":"인터페이스 언어입니다. 카드 이름과 퀴즈 문제는 영어로 유지됩니다."},
+  ru: {"_openCta":"Открыть {0} — {1} монет","_openAgain":"Открыть снова — {0} монет","_needMore":"Нужно ещё {0} монет.","_collectedN":"Собрано {0}/10","_poolLine":"Пул из 10 карт · {0}/с","_card1":"1 карта","_card5":"5 карт","_equipCount":"Экипировано ({0}/5)","_collectedFive":"Собрано {0}/10 · Пять карт за открытие.","_collectedOne":"Собрано {0}/10 · Выше 1 квадриллиона монет — только ОДНА карта за открытие.","_showMoreN":"Показать ещё (осталось {0})","_revealSub":"Карта {0} из {1} · нажмите, чтобы открыть","_incomeNote":"Доход идёт при открытой вкладке. При закрытой: <b>50% первые 2 ч</b>, <b>25% до 24 ч</b>, затем <b>10%</b> без ограничений. Карты, монеты и таймеры сохраняются.","_langNote":"Язык интерфейса. Названия карт и вопросы викторины остаются на английском."}
 };
 const PH = {
   en:['Search 1,000 cards','Search your collection'],
@@ -650,16 +661,16 @@ const PH = {
   ru:['Поиск 1 000 карт','Поиск в коллекции']
 };
 const CHT = {
-  en: {_packsRange:"Packs {0}–{1}", _chapterCards:"{0}/100 cards", _chapterNo:"CH {0}"},
-  zh: {_packsRange:"卡包 {0}–{1}", _chapterCards:"{0}/100 张卡", _chapterNo:"第 {0} 章"},
-  es: {_packsRange:"Sobres {0}–{1}", _chapterCards:"{0}/100 cartas", _chapterNo:"CAP {0}"},
-  it: {_packsRange:"Pacchetti {0}–{1}", _chapterCards:"{0}/100 carte", _chapterNo:"CAP {0}"},
-  fr: {_packsRange:"Packs {0}–{1}", _chapterCards:"{0}/100 cartes", _chapterNo:"CH {0}"},
-  ja: {_packsRange:"パック {0}–{1}", _chapterCards:"{0}/100 枚", _chapterNo:"CH {0}"},
-  de: {_packsRange:"Pakete {0}–{1}", _chapterCards:"{0}/100 Karten", _chapterNo:"KAP {0}"},
-  pt: {_packsRange:"Pacotes {0}–{1}", _chapterCards:"{0}/100 cartas", _chapterNo:"CAP {0}"},
+  en: {_packsRange:"Packs {0}–{1}", _chapterCards:"{0}/{1} cards", _chapterNo:"CH {0}"},
+  zh: {_packsRange:"卡包 {0}–{1}", _chapterCards:"{0}/{1} 张卡", _chapterNo:"第 {0} 章"},
+  es: {_packsRange:"Sobres {0}–{1}", _chapterCards:"{0}/{1} cartas", _chapterNo:"CAP {0}"},
+  it: {_packsRange:"Pacchetti {0}–{1}", _chapterCards:"{0}/{1} carte", _chapterNo:"CAP {0}"},
+  fr: {_packsRange:"Packs {0}–{1}", _chapterCards:"{0}/{1} cartes", _chapterNo:"CH {0}"},
+  ja: {_packsRange:"パック {0}–{1}", _chapterCards:"{0}/{1} 枚", _chapterNo:"CH {0}"},
+  de: {_packsRange:"Pakete {0}–{1}", _chapterCards:"{0}/{1} Karten", _chapterNo:"KAP {0}"},
+  pt: {_packsRange:"Pacotes {0}–{1}", _chapterCards:"{0}/{1} cartas", _chapterNo:"CAP {0}"},
   ko: {_packsRange:"팩 {0}–{1}", _chapterCards:"{0}/100장", _chapterNo:"CH {0}"},
-  ru: {_packsRange:"Паки {0}–{1}", _chapterCards:"{0}/100 карт", _chapterNo:"ГЛ {0}"}
+  ru: {_packsRange:"Паки {0}–{1}", _chapterCards:"{0}/{1} карт", _chapterNo:"ГЛ {0}"}
 };
 const CHNAMES = {
   zh: {'Summer Starts':'夏日开始','Danville Days':'丹维尔日常','O.W.C.A. Files':'O.W.C.A. 档案','Doof’s Lab':'杜芬舒斯实验室','Movie Mayhem':'电影大乱斗','Holiday Hullabaloo':'节日狂欢','Alternate Dimensions':'平行宇宙','Music & Showbiz':'音乐与演艺','Danville Legends':'丹维尔传说','Trillion Club':'万亿俱乐部'},
@@ -674,28 +685,28 @@ const CHNAMES = {
 };
 function chapterName(n){ return (CHNAMES[s.lang] && CHNAMES[s.lang][n]) || n; }
 const CHC = {
-  en:"{0}/100 chapter cards collected.",
-  zh:"{0}/100 张章节卡已收集",
-  es:"{0}/100 cartas del capítulo coleccionadas",
-  it:"{0}/100 carte del capitolo collezionate",
-  fr:"{0}/100 cartes du chapitre collectionnées",
-  ja:"{0}/100 チャプターカード収集済み",
-  de:"{0}/100 Kapitelkarten gesammelt",
-  pt:"{0}/100 cartas do capítulo coletadas",
-  ko:"{0}/100 챕터 카드 수집됨",
-  ru:"{0}/100 карт главы собрано"
+  en:"{0}/{1} chapter cards collected.",
+  zh:"{0}/{1} 张章节卡已收集",
+  es:"{0}/{1} cartas del capítulo coleccionadas",
+  it:"{0}/{1} carte del capitolo collezionate",
+  fr:"{0}/{1} cartes du chapitre collectionnées",
+  ja:"{0}/{1} チャプターカード収集済み",
+  de:"{0}/{1} Kapitelkarten gesammelt",
+  pt:"{0}/{1} cartas do capítulo coletadas",
+  ko:"{0}/{1} 챕터 카드 수집됨",
+  ru:"{0}/{1} карт главы собрано"
 };
 const PKT = {
-  en: {_cardsN:"{0} cards", _packOf:"Chapter {0} · Pack {1} of 100"},
-  zh: {_cardsN:"{0} 张卡", _packOf:"第 {0} 章 · 第 {1}/100 个卡包"},
-  es: {_cardsN:"{0} cartas", _packOf:"Capítulo {0} · Sobre {1} de 100"},
-  it: {_cardsN:"{0} carte", _packOf:"Capitolo {0} · Pacchetto {1} di 100"},
-  fr: {_cardsN:"{0} cartes", _packOf:"Chapitre {0} · Pack {1} sur 100"},
-  ja: {_cardsN:"{0} 枚", _packOf:"チャプター {0} · パック {1}/100"},
-  de: {_cardsN:"{0} Karten", _packOf:"Kapitel {0} · Paket {1} von 100"},
-  pt: {_cardsN:"{0} cartas", _packOf:"Capítulo {0} · Pacote {1} de 100"},
-  ko: {_cardsN:"{0}장", _packOf:"챕터 {0} · 팩 {1}/100"},
-  ru: {_cardsN:"{0} карт", _packOf:"Глава {0} · Пак {1} из 100"}
+  en: {_cardsN:"{0} cards", _packOf:"Chapter {0} · Pack {1} of {2}"},
+  zh: {_cardsN:"{0} 张卡", _packOf:"第 {0} 章 · 第 {1} of {2}"},
+  es: {_cardsN:"{0} cartas", _packOf:"Capítulo {0} · Sobre {1} of {2}"},
+  it: {_cardsN:"{0} carte", _packOf:"Capitolo {0} · Pacchetto {1} of {2}"},
+  fr: {_cardsN:"{0} cartes", _packOf:"Chapitre {0} · Pack {1} of {2}"},
+  ja: {_cardsN:"{0} 枚", _packOf:"チャプター {0} · パック {1} of {2}"},
+  de: {_cardsN:"{0} Karten", _packOf:"Kapitel {0} · Paket {1} of {2}"},
+  pt: {_cardsN:"{0} cartas", _packOf:"Capítulo {0} · Pacote {1} of {2}"},
+  ko: {_cardsN:"{0}장", _packOf:"챕터 {0} · 팩 {1} of {2}"},
+  ru: {_cardsN:"{0} карт", _packOf:"Глава {0} · Пак {1} of {2}"}
 };
 const DICTS = {};
 LANGS.forEach(([c]) => {
@@ -716,6 +727,8 @@ function detectLang(){
 function fmt(n){
   n = Number(n) || 0;
   const a = Math.abs(n);
+  if (a >= 1e18) return (n / 1e18).toFixed(2) + 'Qi';
+  if (a >= 1e15) return (n / 1e15).toFixed(2) + 'Qa';
   if (a >= 1e12) return (n / 1e12).toFixed(2) + 'T';
   if (a >= 1e9) return (n / 1e9).toFixed(2) + 'B';
   if (a >= 1e6) return (n / 1e6).toFixed(2) + 'M';
@@ -900,101 +913,90 @@ function pickRoster(pool, n, seed){
 }
 
 /* =========================================================
-   NEW CHARACTER GENERATOR
-   Every pack holds ten brand-new characters. Names are built
-   from a chapter-themed adjective plus a creature noun, and
-   each card gets its own art variant + colour.
+   ROSTER: 10,000 packs x 10 cards = 100,000 characters
+   Names: generated proper name + species, guaranteed unique.
+   Art: shape combo (21,600) + own colour per card.
    ========================================================= */
-const NAME_ADJ = [
-  ['Sunny','Salty','Coral','Tidal','Sandy','Sprinkler','Lemonade','Bubble','Watermelon','Popsicle','Kite','Puddle','Splashdown','Backyard','Garden','Sandcastle'],
-  ['Downtown','Bus Stop','Mailbox','Scooter','Mall','Slushy','Cookie','Go-Kart','Treehouse','Sidewalk','Neighborhood','Town Hall','Bicycle','Snack','Schoolyard','Mayor'],
-  ['Fedora','Laser','Briefcase','Cipher','Spyglass','Walkie-Talkie','Microfilm','Gadget','Stealth','Razor','Satellite','Codebook','Nightwatch','Badge','Wiretap','Undercover'],
-  ['Inator','Gear','Plasma','Magnet','Raygun','Voltage','Sprocket','Test Tube','Static','Bolt','Rivet','Fuse','Piston','Glow','Hypno','Clone'],
-  ['Popcorn','Red Carpet','Stunt','Blooper','Camera','Sequel','Trailer','Blockbuster','Matinee','Snack Bar','Spotlight','Reel','Credits','Montage','Premiere','Cameo'],
-  ['Tinsel','Candy Cane','Mistletoe','Firecracker','Pumpkin','Eggnog','Shamrock','Valentine','Sleigh','Bonfire','Parade','Confetti','Snowball','Lantern','Costume','Giftwrap'],
-  ['Portal','Mirror','Quantum','Glitch','Warp','Phase','Paradox','Echo','Rift','Chrome','Neon','Void','Circuit','Hologram','Shard','Static'],
-  ['Disco','Encore','Vinyl','Kazoo','Microphone','Power Chord','Rhythm','Backstage','Amp','Cassette','Ballad','Solo','Mosh Pit','Fanfare','Remix','Spotlight'],
-  ['Mythic','Kraken','Phoenix','Troll','Banshee','Sphinx','Yeti','Dragon','Wyvern','Cyclops','Gargoyle','Basilisk','Griffin','Manticore','Wraith','Titan'],
-  ['Cosmic','Nova','Aurum','Eclipse','Starlight','Singularity','Gilded','Royal','Obsidian','Platinum','Celestial','Radiant','Imperial','Meteor','Diamond','Infinity']
-];
-const NAME_NOUN = ['Golem','Slime','Sprite','Bot','Titan','Drone','Ghost','Wisp','Blob','Crab','Snail','Yeti','Reindeer','Cactus','Parrot','Cat','Duck','Goose','Comet','Toaster','Muffin','Puppet','Plane','Pencil','Eraser','Raccoon','Mouse','Pumpkin','Bee','Balloon','Tiger','Shark','Dragon','Gecko','Turtle','Spider','Bear','Eagle','Porcupine','Narwhal','Vulture','Pug','Turkey','Bat','Bunny','Moth','Penguin','Slug','Lynx','Rooster','Elephant','Mole','Pixie','Phoenix','Puffer','Jet','Vacuum','Pigeon','Newt','Mammoth','Squid','Otter','Walrus','Mantis','Ferret','Badger','Falcon','Bison','Moose','Chameleon','Scorpion','Jellyfish','Starfish','Seahorse','Hedgehog','Koala','Panda','Lemur','Sloth','Armadillo','Pelican','Toucan','Flamingo','Piranha','Anglerfish','Sasquatch','Gremlin','Warlock','Sphinx','Cyclops','Kraken','Griffin','Basilisk'];
-const RESERVED_NAMES = new Set(['Grass','Mecha Tree Bot']);
-const usedNames = new Set();
-function chapterNames(ci, count, seed){
-  const adjs = NAME_ADJ[ci] || NAME_ADJ[0];
-  const combos = [];
-  for (const a of adjs) for (const n of NAME_NOUN) combos.push(a + ' ' + n);
-  const rnd = seeded(seed);
-  for (let i = combos.length - 1; i > 0; i--){
-    const j = Math.floor(rnd() * (i + 1));
-    const t = combos[i]; combos[i] = combos[j]; combos[j] = t;
+const PACKS_PER_CHAPTER = 1000;
+const PACK_TOTAL = PACKS_PER_CHAPTER * CHAPTERS.length;
+const MAX_COST = 1e18;
+
+const SPECIES = ['Golem','Slime','Sprite','Bot','Titan','Drone','Ghost','Wisp','Blob','Crab','Snail','Yeti','Reindeer','Cactus','Parrot','Cat','Duck','Goose','Comet','Toaster','Muffin','Puppet','Plane','Pencil','Eraser','Raccoon','Mouse','Pumpkin','Bee','Balloon','Tiger','Shark','Dragon','Gecko','Turtle','Spider','Bear','Eagle','Porcupine','Narwhal','Vulture','Pug','Turkey','Bat','Bunny','Moth','Penguin','Slug','Lynx','Rooster','Elephant','Mole','Pixie','Phoenix','Puffer','Jet','Vacuum','Pigeon','Newt','Mammoth','Squid','Otter','Walrus','Mantis','Ferret','Badger','Falcon','Bison','Moose','Chameleon','Scorpion','Jellyfish','Starfish','Seahorse','Hedgehog','Koala','Panda','Lemur','Sloth','Armadillo','Pelican','Toucan','Flamingo','Piranha','Anglerfish','Sasquatch','Gremlin','Warlock','Sphinx','Cyclops','Kraken','Griffin','Basilisk','Gargoyle','Wyvern','Troll','Banshee','Manticore','Wraith','Imp','Ogre','Gnome','Goblin','Harpy','Chimera','Hydra','Minotaur','Pegasus','Unicorn','Behemoth','Leviathan','Serpent','Viper','Cobra','Axolotl','Tapir','Quokka','Wombat','Meerkat','Ibex','Yak','Okapi','Pangolin','Capybara','Llama','Alpaca','Manatee','Dolphin','Orca','Seal','Heron','Crane','Stork','Condor','Osprey','Kestrel','Raven'];
+
+const P_HEAD = ['Zo','Mi','Ka','Vel','Tha','Bry','Nix','Ori','Sel','Dun','Fen','Gal','Ish','Jor','Kel','Lyr','Mar','Nal','Pex','Quil','Rho','Syl','Tor','Ul','Vey','Wren','Xan','Yel','Zar','Ash'];
+const P_MID = ['ra','lo','vi','tho','mi','sa','ne','du','ka','ri','zu','pha','bel','dor','fen','gal','mor','nis','pel','ryn'];
+const P_END = ['n','k','x','th','m','r','l','s','dra','gon','wyn','mir','tis','var','lin','net'];
+const PROPER = (() => {
+  const rnd = seeded(90210), seen = new Set(), out = [];
+  while (out.length < 1001){
+    const nm = P_HEAD[Math.floor(rnd() * P_HEAD.length)] + P_MID[Math.floor(rnd() * P_MID.length)] + P_END[Math.floor(rnd() * P_END.length)];
+    if (seen.has(nm)) continue;
+    seen.add(nm); out.push(nm);
   }
-  const out = [];
-  let blockNouns = new Set(), blockAdjs = new Set();
-  const take = strict => {
-    for (const c of combos){
-      if (out.length >= count) return;
-      if (out.length % 10 === 0){ blockNouns = new Set(); blockAdjs = new Set(); }
-      const cut = c.lastIndexOf(' ');
-      const adj = c.slice(0, cut), noun = c.slice(cut + 1);
-      if (strict && (blockNouns.has(noun) || blockAdjs.has(adj))) continue;
-      if (usedNames.has(c) || RESERVED_NAMES.has(c)) continue;
-      usedNames.add(c);
-      blockNouns.add(noun); blockAdjs.add(adj);
-      out.push(c);
-    }
-  };
-  take(true);
-  if (out.length < count) take(false);
   return out;
-}
-/* unique art variant per card: 6 bodies x 5 tops x 3 arms x 5 accents x 4 eyes */
+})();
+function charName(c){ return PROPER[c % PROPER.length] + ' ' + SPECIES[c % SPECIES.length]; }
+
+const PACK_DESC = ['Dawn','Sunrise','Morning','Noon','Afternoon','Dusk','Sunset','Midnight','Coral','Tidal','Golden','Silver','Copper','Emerald','Sapphire','Ruby','Topaz','Onyx','Pearl','Ivory','Crimson','Azure','Teal','Amber','Violet','Indigo','Scarlet','Jade','Opal','Quartz','Marble','Granite','Bronze','Platinum','Neon','Retro','Turbo','Mega','Ultra','Hyper','Cosmic','Solar','Lunar','Stellar','Nebula','Aurora','Eclipse','Zenith','Nadir','Ridge','Valley','Bay','Cove','Reef','Shoal','Dune','Mesa','Canyon','Glacier','Fjord','Delta','Harbor','Lagoon','Marsh','Grove','Thicket','Meadow','Prairie','Tundra','Oasis','Summit','Crater','Basin','Plateau','Cliff','Bluff','Cape','Point','Strait','Channel','Current','Tide','Surge','Swell','Spray','Foam','Breeze','Gust','Gale','Storm','Thunder','Lightning','Rainbow','Halo','Prism','Glow','Spark','Flare','Ember','Frost','Mist'];
+
+/* art variants: 6 bodies x 5 tops x 3 arms x 5 accents x 4 eyes x 2 flip x 3 sizes = 21,600 */
 const CRITTER_VARIANTS = [];
 for (let bd = 0; bd < 6; bd++)
   for (let tp = 0; tp < 5; tp++)
     for (let ar = 0; ar < 3; ar++)
       for (let ac = 0; ac < 5; ac++)
-        for (let ey = 0; ey < 4; ey++) CRITTER_VARIANTS.push([bd, tp, ar, ac, ey]);
+        for (let ey = 0; ey < 4; ey++)
+          for (let fl = 0; fl < 2; fl++)
+            for (let sc = 0; sc < 3; sc++) CRITTER_VARIANTS.push([bd, tp, ar, ac, ey, fl, sc]);
 const varRnd = seeded(20260816);
 for (let i = CRITTER_VARIANTS.length - 1; i > 0; i--){
   const j = Math.floor(varRnd() * (i + 1));
   const t = CRITTER_VARIANTS[i]; CRITTER_VARIANTS[i] = CRITTER_VARIANTS[j]; CRITTER_VARIANTS[j] = t;
 }
 
-let packIndex = 0;
+let packIndex = 0, lastCost = 0;
 CHAPTERS.forEach((ch, ci) => {
-  const chNames = chapterNames(ci, 100, 7919 * (ci + 1) + 13);
-  ch.themes.forEach((t, ti) => {
+  for (let j = 0; j < PACKS_PER_CHAPTER; j++){
     const i = packIndex++;
-    const cost = i === 99 ? 1e12 : round3(100 * Math.pow(1e12 / 100, i / 99));
-    const pull = i < 90 ? 5 : 1;
+    const theme = ch.themes[j % ch.themes.length];
+    let cost;
+    if (i === PACK_TOTAL - 1) cost = MAX_COST;
+    else {
+      cost = Math.ceil(100 * Math.pow(MAX_COST / 100, i / (PACK_TOTAL - 1)));
+      if (cost <= lastCost) cost = lastCost + 1;
+    }
+    lastCost = cost;
+    const pull = cost > 1e15 ? 1 : 5;
     const baseRate = cost / (pull === 1 ? 520 : 380);
     const pack = {
-      i, name:t[0], tag:t[1], icon:t[2], ed:t[3], chapter:ci,
+      i, name:theme[0], tag:theme[1], icon:theme[2], ed:theme[3], chapter:ci,
       cost, pull, baseRate, wait:WAITS[ci], color:ch.color,
       desc:`${ch.blurb} Ten brand-new characters.`,
+      loc: j < 10 ? ci * 10 + j : -1,
       pool:[]
     };
+    if (i === PACK_TOTAL - 1) pack.name = 'The Quintillion Pack';
+    else if (j >= 10) pack.name = theme[0] + ' · ' + PACK_DESC[Math.min(PACK_DESC.length - 1, Math.floor(j / 10)) % PACK_DESC.length];
     for (let k = 0; k < 10; k++){
       const cardIndex = CARDS.length;
-      const name = chNames[ti * 10 + k] || ('Mystery Sprite ' + (cardIndex + 1));
+      const nm = charName(cardIndex);
       const bIndex = BASES.length;
-      const hue = (cardIndex * 137.508 + 96) % 360;
+      const hue = (cardIndex * 137.508) % 360;
       BASES.push({
-        n:name, s:name, k:'critter',
-        v:CRITTER_VARIANTS[cardIndex % CRITTER_VARIANTS.length],
+        n:nm, s:nm, k:'critter',
+        v:CRITTER_VARIANTS[(cardIndex * 7) % CRITTER_VARIANTS.length],
         seed:cardIndex,
-        tone:hueHex(hue, 56 + (cardIndex % 5) * 5, 46 + (cardIndex % 7) * 4),
+        tone:hueHex(hue, 52 + (cardIndex % 6) * 6, 44 + (cardIndex % 9) * 3),
         unique:1
       });
-      CARDS.push({i:cardIndex, b:bIndex, e:'classic', p:i, n:name});
+      CARDS.push({i:cardIndex, b:bIndex, e:'classic', p:i, n:nm});
       pack.pool.push(cardIndex);
     }
     pack.band = pull === 1
       ? [baseRate * TMULT[3] * 0.92, baseRate * TMULT[4] * 1.08]
       : [baseRate * TMULT[0] * 0.92, baseRate * TMULT[4] * 1.08];
     PACKS.push(pack);
-  });
+  }
 });
 PACKS.forEach((p, i) => { p.i = i; });
 
@@ -1113,7 +1115,9 @@ const PACK_NAMES = {
   ]
 };
 function packName(p){
-  return (PACK_NAMES[s.lang] && PACK_NAMES[s.lang][p.i]) || p.name;
+  const table = PACK_NAMES[s.lang];
+  if (p.loc >= 0 && table && table[p.loc]) return table[p.loc];
+  return p.name;
 }
 
 /* =========================================================
@@ -1126,13 +1130,13 @@ function placeSpecial(packIdx, slot, name, kind, rateMul, tone){
   CARDS[ci] = Object.assign({}, CARDS[ci], {b:bIndex, e:'classic', n:name, unique:1});
 }
 placeSpecial(0, 9, 'Grass', 'grass', 0.5, '#6fbf4a');
-placeSpecial(61, 9, 'Mecha Tree Bot', 'treebot', 1, '#7fc24a');
+placeSpecial(6000, 9, 'Mecha Tree Bot', 'treebot', 1, '#7fc24a');
 const STAR_BASES = [0,1,2,38,6,5,22,7,8,9];
-PACKS[99].pool.forEach((ci, j) => {
+PACKS[PACK_TOTAL - 1].pool.forEach((ci, j) => {
   const b = STAR_BASES[j];
   CARDS[ci] = Object.assign({}, CARDS[ci], {b, e:'classic', n:BASES[b].s, unique:1, star:1});
 });
-PACKS[99].desc = 'The ten stars of the show: Phineas, Ferb, Candace, Meap, Isabella, Perry, Doofenshmirtz, Baljeet, Buford and Stacy. One card per open.';
+PACKS[PACK_TOTAL - 1].desc = 'The ten stars of the show: Phineas, Ferb, Candace, Meap, Isabella, Perry, Doofenshmirtz, Baljeet, Buford and Stacy. One card per open.';
 
 /* =========================================================
    RIVALS
@@ -1614,6 +1618,9 @@ function critter(a){
   else if (eye === 2) out += `<circle cx="50" cy="${ey}" r="8" fill="#fff" stroke="${INK}" stroke-width="1.6"/><circle cx="50" cy="${ey + 1}" r="3.6" fill="#182033"/><circle cx="52" cy="${ey - 1}" r="1.2" fill="#fff"/>`;
   else out += `<circle cx="41" cy="${ey + 2}" r="3.4" fill="#fff" stroke="${INK}" stroke-width="1.2"/><circle cx="50" cy="${ey - 4}" r="3.6" fill="#fff" stroke="${INK}" stroke-width="1.2"/><circle cx="59" cy="${ey + 2}" r="3.4" fill="#fff" stroke="${INK}" stroke-width="1.2"/><circle cx="41" cy="${ey + 2}" r="1.6" fill="#182033"/><circle cx="50" cy="${ey - 4}" r="1.7" fill="#182033"/><circle cx="59" cy="${ey + 2}" r="1.6" fill="#182033"/>`;
   out += `<path d="M45 ${ey + 11} q5 5 10 0" stroke="${INK}" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  const flip = v[5] ? -1 : 1;
+  const zoom = [1, 1.06, 0.94][v[6] || 0] || 1;
+  if (flip < 0 || zoom !== 1) out = `<g transform="translate(50,97) scale(${flip * zoom},${zoom}) translate(-50,-97)">${out}</g>`;
   return out;
 }
 function avatarSVG(a){
@@ -1651,10 +1658,10 @@ function rid(){ return Date.now().toString(36) + '-' + Math.random().toString(36
 const DEF = {
   coins:120, cards:[], packsOpened:0, equipped:[], lifetime:120, unclaimed:0,
   upgrade:null, upgrades:[], notice:'', sound:false, fast:false, smart:true, lang:null,
-  lastSeen:0, seenVersion:'', skips:1,
+  lastSeen:0, seenVersion:'', skips:1, rivalScale:0,
   playerName:'You', rivals:null, asked:{}, gStreak:0,
   level:'Easy', category:'Characters', triviaMode:'level', q:null, answer:null, run:null, message:'', msgKind:'',
-  chapter:0, pack:0, cardChapter:'all', page:'packs', labSearch:'', search:'', cfilter:'all', rfilter:'all', sort:'new', limit:24
+  chapter:0, pack:0, packPage:0, cardChapter:'all', page:'packs', labSearch:'', search:'', cfilter:'all', rfilter:'all', sort:'new', limit:24
 };
 let s = JSON.parse(JSON.stringify(DEF));
 try {
@@ -1670,6 +1677,10 @@ if (!Number.isFinite(s.coins) || s.coins < 0) s.coins = 120;
 if (!Number.isFinite(s.unclaimed) || s.unclaimed < 0) s.unclaimed = 0;
 if (!Number.isFinite(s.lifetime) || s.lifetime < 0) s.lifetime = 120;
 if (!Array.isArray(s.rivals) || s.rivals.length !== RIVAL_SEED.length) s.rivals = freshRivals();
+if (!s.rivalScale){
+  s.rivals.forEach(r => { r.cps *= 1e7; r.coins *= 1e7; });
+  s.rivalScale = 1e7;
+}
 if (!s.asked || typeof s.asked !== 'object') s.asked = {};
 if (!Number.isFinite(s.skips) || s.skips < 0) s.skips = 1;
 if (!Number.isFinite(s.gStreak) || s.gStreak < 0) s.gStreak = 0;
@@ -1742,10 +1753,10 @@ function save(){
   try {
     localStorage.setItem(KEY, JSON.stringify({
       coins:s.coins, cards:s.cards, packsOpened:s.packsOpened, equipped:s.equipped,
-      lifetime:s.lifetime, unclaimed:s.unclaimed, upgrades:s.upgrades, notice:s.notice, lastSeen:Date.now(), seenVersion:s.seenVersion, skips:s.skips,
+      lifetime:s.lifetime, unclaimed:s.unclaimed, upgrades:s.upgrades, notice:s.notice, lastSeen:Date.now(), seenVersion:s.seenVersion, skips:s.skips, rivalScale:s.rivalScale,
       sound:s.sound, fast:s.fast, smart:s.smart, lang:s.lang, playerName:s.playerName, rivals:s.rivals,
       asked:s.asked, gStreak:s.gStreak, level:s.level, category:s.category, triviaMode:s.triviaMode,
-      chapter:s.chapter, pack:s.pack, cardChapter:s.cardChapter, sort:s.sort, limit:s.limit
+      chapter:s.chapter, pack:s.pack, packPage:s.packPage, cardChapter:s.cardChapter, sort:s.sort, limit:s.limit
     }));
   } catch(e){}
 }
@@ -2006,15 +2017,15 @@ function localizeDOM(root){
       [/^1 card$/, d._card1],
       [/^Equipped \((\d+)\/5\)$/, d._equipCount],
       [/^Collected (\d+)\/10 · Five cards per open\.$/, d._collectedFive],
-      [/^Collected (\d+)\/10 · Only ONE card per open in the Trillion Club\.$/, d._collectedOne],
+      [/^Collected (\d+)\/10 · Only ONE card per open above 1 quadrillion coins\.$/, d._collectedOne],
       [/^Show more \((\d+) left\)$/, d._showMoreN],
       [/^Card (\d+) of (\d+) · tap the card to flip$/, d._revealSub],
-      [/^Packs (\d+)–(\d+)$/, d._packsRange],
-      [/^(\d+)\/100 cards$/, d._chapterCards],
+      [/^Packs ([\d,]+)–([\d,]+)$/, d._packsRange],
+      [/^([\d,]+)\/([\d,]+) cards$/, d._chapterCards],
       [/^CH (\d+)$/, d._chapterNo],
-      [/^(\d+)\/100 chapter cards collected\.$/, d._chapterCollected],
+      [/^([\d,]+)\/([\d,]+) chapter cards collected\.$/, d._chapterCollected],
       [/^(\d+) cards$/, d._cardsN],
-      [/^Chapter (\d+) · Pack (\d+) of 100$/, d._packOf]
+      [/^Chapter (\d+) · Pack ([\d,]+) of ([\d,]+)$/, d._packOf]
     ];
     let out = null;
     for (const [re, tpl] of rules){
@@ -2028,7 +2039,7 @@ function localizeDOM(root){
     if (out) n.nodeValue = raw.replace(key, out);
   }
   root.querySelectorAll('input[placeholder]').forEach(inp => {
-    if (inp.placeholder === 'Search 1,000 cards') inp.placeholder = PH[s.lang][0];
+    if (inp.placeholder === 'Search 100,000 cards') inp.placeholder = PH[s.lang][0];
     else if (inp.placeholder === 'Search your collection') inp.placeholder = PH[s.lang][1];
   });
 }
@@ -2055,23 +2066,37 @@ function openLangModal(){
    ========================================================= */
 function renderPacks(){
   const ch = CHAPTERS[s.chapter];
+  const packs = PACKS.filter(p => p.chapter === s.chapter);
+  const perPage = 50;
+  const pages = Math.max(1, Math.ceil(packs.length / perPage));
+  if (!Number.isInteger(s.packPage) || s.packPage < 0 || s.packPage >= pages) s.packPage = 0;
+  const start = s.packPage * perPage;
+  const page = packs.slice(start, start + perPage);
   const owned = chapterOwned(s.chapter);
+  const chTotal = packs.length * 10;
   el.innerHTML = `
   <div class="chapters">${CHAPTERS.map((c, i) => {
     const o = chapterOwned(i);
+    const total = PACKS_PER_CHAPTER * 10;
+    const pct = Math.min(100, o / total * 100).toFixed(1);
     return `<button class="chapter ${i === s.chapter ? 'on' : ''}" data-ch="${i}" style="--tone:${c.color}">
       <span class="ch-top"><span class="ch-ico">${c.icon}</span><span class="ch-no">CH ${i + 1}</span></span>
       <span class="ch-name">${chapterName(c.name)}</span>
-      <span class="ch-meta">Packs ${i * 10 + 1}–${i * 10 + 10}</span>
-      <span class="ch-bar"><i style="width:${o}%"></i></span>
-      <span class="ch-pct">${o}/100 cards</span>
+      <span class="ch-meta">Packs ${(i * PACKS_PER_CHAPTER + 1).toLocaleString()}–${((i + 1) * PACKS_PER_CHAPTER).toLocaleString()}</span>
+      <span class="ch-bar"><i style="width:${pct}%"></i></span>
+      <span class="ch-pct">${o.toLocaleString()}/${total.toLocaleString()} cards</span>
     </button>`;
   }).join('')}</div>
   <div class="chapter-head">
-    <div><h2>${ch.icon} ${chapterName(ch.name)}</h2><p class="sub">${ch.blurb} <span>${owned}/100 chapter cards collected.</span></p></div>
+    <div><h2>${ch.icon} ${chapterName(ch.name)}</h2><p class="sub">${ch.blurb} <span>${owned.toLocaleString()}/${chTotal.toLocaleString()} chapter cards collected.</span></p></div>
     <button class="btn ghost small" id="bestBtn">Best affordable</button>
   </div>
-  <div class="packs">${PACKS.filter(p => p.chapter === s.chapter).map(p => {
+  <div class="pager">
+    <button class="pg" data-pg="${s.packPage - 1}" ${s.packPage === 0 ? 'disabled' : ''}>‹ Prev</button>
+    <span>Packs ${(start + 1).toLocaleString()}–${(start + page.length).toLocaleString()} of ${packs.length.toLocaleString()}</span>
+    <button class="pg" data-pg="${s.packPage + 1}" ${s.packPage >= pages - 1 ? 'disabled' : ''}>Next ›</button>
+  </div>
+  <div class="packs">${page.map(p => {
     const own = packOwned(p.i);
     return `<button class="pick" data-pack="${p.i}" style="--tone:${p.color}">
       <span class="pick-top"><span class="pick-ico">${p.icon}</span><span class="pick-pull ${p.pull === 1 ? 'one' : ''}">${p.pull} card${p.pull === 1 ? '' : 's'}</span></span>
@@ -2083,13 +2108,20 @@ function renderPacks(){
   }).join('')}</div>
   <div class="panel">
     <h3>How this works</h3>
-    <p class="hint" style="font-size:11.5px">100 packs · 1,000 cards. Packs <b>1–90</b> give <b>5 cards</b> per open — that is the first 900 cards. The last chapter, <b>Trillion Club (packs 91–100)</b>, gives <b>1 card</b> per open — the final 100 cards. Only your five equipped cards earn coins.</p>
+    <p class="hint" style="font-size:11.5px">10,000 packs · 100,000 cards. Every pack holds ten brand-new characters. Packs costing <b>1 quadrillion (Qa) or less</b> give <b>5 cards</b> per open; anything above that — the last 1,875 packs — gives <b>1 card</b>. Only your five equipped cards earn coins.</p>
   </div>`;
   el.querySelectorAll('[data-ch]').forEach(b => {
     b.onclick = () => {
       s.chapter = +b.dataset.ch;
+      s.packPage = 0;
       const first = PACKS.find(p => p.chapter === s.chapter);
       if (first) s.pack = first.i;
+      save(); render(); window.scrollTo({top:0, behavior:'smooth'});
+    };
+  });
+  el.querySelectorAll('[data-pg]').forEach(b => {
+    b.onclick = () => {
+      s.packPage = +b.dataset.pg;
       save(); render(); window.scrollTo({top:0, behavior:'smooth'});
     };
   });
@@ -2100,7 +2132,9 @@ function renderPacks(){
   best.onclick = () => {
     const aff = PACKS.filter(p => p.cost <= s.coins).sort((a,b) => b.cost - a.cost)[0];
     const target = aff || PACKS.find(p => p.cost > s.coins) || PACKS[0];
-    s.pack = target.i; s.chapter = target.chapter; save(); render();
+    s.pack = target.i; s.chapter = target.chapter;
+    s.packPage = Math.floor((target.i % PACKS_PER_CHAPTER) / 50);
+    save(); render();
     openPackModal(target.i);
   };
 }
@@ -2113,7 +2147,7 @@ function openPackModal(i){
   const afford = s.coins >= p.cost;
   const cards = p.pool.map(ci => `<span class="chip ${hasCard(ci) ? 'got' : ''}">${esc(CARDS[ci].n)}</span>`).join('');
   openModal(`<button class="x" data-close>✕</button>
-    <div class="pack-hero"><span class="ico" style="--tone:${p.color}">${p.icon}</span><div><h3>${packName(p)}</h3><p>Chapter ${p.chapter + 1} · Pack ${i + 1} of 100</p></div></div>
+    <div class="pack-hero"><span class="ico" style="--tone:${p.color}">${p.icon}</span><div><h3>${packName(p)}</h3><p>Chapter ${p.chapter + 1} · Pack ${(i + 1).toLocaleString()} of ${PACKS.length.toLocaleString()}</p></div></div>
     <p class="sub">${p.desc}</p>
     <div class="pack-stats">
       <div class="ps"><span>Price</span><b class="gold">🪙 ${fmtCost(p.cost)}</b></div>
@@ -2291,7 +2325,7 @@ function renderCards(){
     <div class="slots">${slots}</div>
     <div class="sell-row"><button class="btn ghost small" id="sellDup" ${s.cards.length ? '' : 'disabled'}>Sell duplicates</button></div></section>
   <div class="toolbar">
-    <div class="search"><span>🔎</span><input id="searchBox" placeholder="Search 1,000 cards" value="${esc(s.search || '')}" maxlength="40"></div>
+    <div class="search"><span>🔎</span><input id="searchBox" placeholder="Search 100,000 cards" value="${esc(s.search || '')}" maxlength="40"></div>
     <div class="seg"><button data-cf="all" class="${s.cfilter === 'all' ? 'on' : ''}">All</button><button data-cf="equipped" class="${s.cfilter === 'equipped' ? 'on' : ''}">Equipped</button><button data-cf="upgraded" class="${s.cfilter === 'upgraded' ? 'on' : ''}">Upgraded</button></div>
     <select id="sortBox"><option value="new" ${s.sort === 'new' ? 'selected' : ''}>Newest</option><option value="rate" ${s.sort === 'rate' ? 'selected' : ''}>Best rate</option><option value="rarity" ${s.sort === 'rarity' ? 'selected' : ''}>Rarity</option><option value="name" ${s.sort === 'name' ? 'selected' : ''}>Name</option></select>
     <select id="chapterFilter"><option value="all" ${s.cardChapter === 'all' ? 'selected' : ''}>All chapters</option>${CHAPTERS.map((c, i) => `<option value="${i}" ${s.cardChapter === i ? 'selected' : ''}>${c.name}</option>`).join('')}</select>
