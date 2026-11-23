@@ -350,6 +350,16 @@ body.opening .stats{margin:7px 0 3px}
   padding:6px 8px;font-size:8.5px;font-weight:900;white-space:nowrap}
 .pr-btn:disabled{opacity:.4;cursor:not-allowed}
 
+/* lab skip */
+.skipbar{display:flex;align-items:center;gap:7px;font-size:10px;color:#bfe6e6;margin:8px 0 0}
+.skipbar b{color:#ffd166;font-size:13px}
+.skipbar .pill{font-size:7.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#2a1206;
+  background:linear-gradient(180deg,#ffe9a8,#ffc247);padding:2px 7px;border-radius:999px}
+.btn-skip{border:1px solid rgba(84,232,206,.5);background:rgba(84,232,206,.14);color:#9df5e0;border-radius:7px;
+  padding:6px 9px;font-size:8.5px;font-weight:900;white-space:nowrap;margin-left:8px}
+.btn-skip:disabled{opacity:.35;cursor:not-allowed}
+.btn-skip:hover:not(:disabled){background:rgba(84,232,206,.24)}
+
 /* trivia */
 .modes{display:flex;flex-wrap:wrap;gap:5px;padding-bottom:4px}
 .mode{flex:0 0 auto;border:1px solid var(--line);background:rgba(255,255,255,.045);border-radius:10px;
@@ -458,6 +468,14 @@ body.opening .stats{margin:7px 0 3px}
 .upd-list li::before{content:'◆';position:absolute;left:0;top:0;font-size:9px;color:#ffd166;
   text-shadow:0 0 10px rgba(255,209,102,.8)}
 .upd-list b{color:#9df5e0}
+.upd-hist{margin:0 0 13px;border:1px solid rgba(84,232,206,.22);border-radius:12px;padding:7px 10px;
+  background:rgba(4,20,26,.55);max-height:248px;overflow:auto}
+.upd-row{display:flex;gap:9px;font-size:10.5px;line-height:1.5;padding:3px 0;color:#bfe6e6;
+  border-bottom:1px dashed rgba(84,232,206,.12)}
+.upd-row:last-child{border-bottom:0}
+.upd-row b{color:#ffd166;flex:0 0 46px;letter-spacing:.03em;font-weight:900}
+.upd-row.now{color:#fff}
+.upd-row.now b{color:#54e8ce}
 .upd-card .btn.primary{background:linear-gradient(180deg,#ffe9a8,#ffc247 55%,#f5a623);color:#2a1206;
   box-shadow:0 12px 26px -12px #ffc247, inset 0 1px 0 rgba(255,255,255,.7)}
 .upd-card .btn.primary:hover{box-shadow:0 12px 30px -10px #54e8ce, 0 0 0 1px rgba(84,232,206,.5)}
@@ -553,18 +571,29 @@ const RSHADE = ['#dbe3ef','#d6f4e5','#c8e2ff','#eed8ff','#fff0bb'];
 const TMULT = [1, 1.25, 1.6, 2.1, 2.8];
 const MAX_EQ = 5;
 const KEY = 'pf_summer_collector_v2';
-/* release version + what this build adds (bump both on every update)
-   history: 1.0 base game · 1.1 ten languages · 1.2 standalone fix ·
-   2.0 new things + star pack + selling · 2.1 990 new characters · 2.2 pack pull rule ·
-   2.3 multiple upgrades · 2.4 offline income · 2.5 offline tiers ·
-   2.6 500B cutoff · 2.7 1T-only pull · 2.8 Trillion Club pull · 3.0 update popups · 3.1 popup styling */
-const VERSION = '3.1.0';
+/* release version + what this build adds (bump both on every update) */
+const VERSION = '3.1.2';
+const RELEASES = [
+  ['1.0', 'Base game: 100 packs · 1,000 cards'],
+  ['1.1', 'Ten languages + localized pack names'],
+  ['1.2', 'Standalone single-file fix'],
+  ['2.0', 'New characters, star 1T pack, selling'],
+  ['2.1', '990 brand-new characters with unique art'],
+  ['2.2', 'Pack pull rule: 5 cards or 1'],
+  ['2.3', 'Multiple upgrades at once'],
+  ['2.4', 'Offline earnings'],
+  ['2.5', 'Unlimited offline tiers 50 / 25 / 10'],
+  ['2.6', '500B card cutoff'],
+  ['2.7', '1T-only single-card pack'],
+  ['2.8', 'Trillion Club single-card chapter'],
+  ['3.0', 'Update popups'],
+  ['3.1', 'Gold + seafoam popup styling'],
+  ['3.1.1', 'One free lab skip for every player'],
+  ['3.1.2', 'Full update history in this card']
+];
 const WHATS_NEW = [
-  'Update popups like this one — every release now announces itself',
-  'Gold + seafoam styling, and the version number in the footer',
-  'Packs <b>1–90</b> give 5 cards; the <b>Trillion Club</b> chapter (91–100) gives 1',
-  'Offline income: <b>50% → 25% → 10%</b>, 2 hours, 1 day, then no limit',
-  'Sell any card for <b>10%</b> of its pack price; run several upgrades at once'
+  'Free <b>⚡ lab skip</b> for everyone — finish one running upgrade instantly',
+  'This card now lists <b>every update</b> since launch'
 ];
 const INK = '#121a2c';
 
@@ -1622,7 +1651,7 @@ function rid(){ return Date.now().toString(36) + '-' + Math.random().toString(36
 const DEF = {
   coins:120, cards:[], packsOpened:0, equipped:[], lifetime:120, unclaimed:0,
   upgrade:null, upgrades:[], notice:'', sound:false, fast:false, smart:true, lang:null,
-  lastSeen:0, seenVersion:'',
+  lastSeen:0, seenVersion:'', skips:1,
   playerName:'You', rivals:null, asked:{}, gStreak:0,
   level:'Easy', category:'Characters', triviaMode:'level', q:null, answer:null, run:null, message:'', msgKind:'',
   chapter:0, pack:0, cardChapter:'all', page:'packs', labSearch:'', search:'', cfilter:'all', rfilter:'all', sort:'new', limit:24
@@ -1642,6 +1671,7 @@ if (!Number.isFinite(s.unclaimed) || s.unclaimed < 0) s.unclaimed = 0;
 if (!Number.isFinite(s.lifetime) || s.lifetime < 0) s.lifetime = 120;
 if (!Array.isArray(s.rivals) || s.rivals.length !== RIVAL_SEED.length) s.rivals = freshRivals();
 if (!s.asked || typeof s.asked !== 'object') s.asked = {};
+if (!Number.isFinite(s.skips) || s.skips < 0) s.skips = 1;
 if (!Number.isFinite(s.gStreak) || s.gStreak < 0) s.gStreak = 0;
 if (!Number.isInteger(s.pack) || s.pack < 0 || s.pack >= PACKS.length) s.pack = 0;
 s.chapter = PACKS[s.pack].chapter;
@@ -1712,7 +1742,7 @@ function save(){
   try {
     localStorage.setItem(KEY, JSON.stringify({
       coins:s.coins, cards:s.cards, packsOpened:s.packsOpened, equipped:s.equipped,
-      lifetime:s.lifetime, unclaimed:s.unclaimed, upgrades:s.upgrades, notice:s.notice, lastSeen:Date.now(), seenVersion:s.seenVersion,
+      lifetime:s.lifetime, unclaimed:s.unclaimed, upgrades:s.upgrades, notice:s.notice, lastSeen:Date.now(), seenVersion:s.seenVersion, skips:s.skips,
       sound:s.sound, fast:s.fast, smart:s.smart, lang:s.lang, playerName:s.playerName, rivals:s.rivals,
       asked:s.asked, gStreak:s.gStreak, level:s.level, category:s.category, triviaMode:s.triviaMode,
       chapter:s.chapter, pack:s.pack, cardChapter:s.cardChapter, sort:s.sort, limit:s.limit
@@ -1818,6 +1848,16 @@ function startUpgrade(id){
   s.notice = '';
   closeModal(); save(); sfx('upgrade'); render();
   toast(`Upgrade started · ${durationText(mins)} · ${s.upgrades.length} running`, 'good');
+}
+function useLabSkip(cardId){
+  const job = s.upgrades.find(u => u.cardId === cardId);
+  if (!job) return;
+  if (!s.skips){ toast('No lab skips left', 'bad'); return; }
+  s.skips--;
+  const msg = finishUpgrade(job);
+  s.notice = msg;
+  save(); sfx('rare'); render();
+  toast('⚡ Skip used · ' + msg, 'good');
 }
 function sellCard(id){
   const c = byId(id);
@@ -2309,12 +2349,13 @@ function renderLab(){
   }).filter(c => !s.labSearch || defOf(c).n.toLowerCase().includes(s.labSearch.toLowerCase())).slice(0, 30);
   const jobs = s.upgrades.map(u => {
     const c = byId(u.cardId);
-    return `<div class="lab-run"><div><span>Upgrading</span><b>${c ? esc(defOf(c).n) : 'Card'}</b></div><div class="lab-timer" data-job-timer="${u.cardId}">${countdownText(u.endsAt - Date.now())}</div></div>`;
+    return `<div class="lab-run"><div><span>Upgrading</span><b>${c ? esc(defOf(c).n) : 'Card'}</b></div><div class="lab-timer" data-job-timer="${u.cardId}">${countdownText(u.endsAt - Date.now())}</div><button class="btn-skip" data-skip="${u.cardId}" ${s.skips ? '' : 'disabled'}>⚡ Skip</button></div>`;
   }).join('');
   el.innerHTML = `
   <div class="page-head"><h2>⚗ Upgrade-inator Lab</h2><p class="sub">Run as many upgrades as you can afford. Each result replaces that card's multiplier.</p></div>
   <section class="panel machine"><div class="machine-head"><div><h2>Upgrade-inator</h2><p class="sub" style="margin:2px 0 0">Pay 2× the card's pack price. Wait. Roll the multiplier.</p></div><span class="lab-tag">${s.upgrades.length ? s.upgrades.length + ' RUNNING' : 'READY'}</span></div>
     <div class="odds"><div class="odd"><b>55%</b><span>1× rate</span></div><div class="odd"><b>35%</b><span>2× rate</span></div><div class="odd"><b>10%</b><span>5× rate</span></div></div>
+    <div class="skipbar"><span class="pill">⚡ Lab skip</span> <b>${s.skips}</b><span>${s.skips ? '· finish a running upgrade instantly' : '· none left'}</span></div>
     ${jobs || '<p class="hint">No active upgrades. Pick a card below.</p>'}
     ${s.notice ? `<p class="lab-notice">${esc(s.notice)}</p>` : ''}
     <p class="hint" style="margin-top:8px">Each card can only be in one upgrade at a time. Timers keep counting while the tab is closed; income does not. A 1× result can lower an already-upgraded card.</p>
@@ -2337,6 +2378,7 @@ function renderLab(){
     if (n){ n.focus(); n.setSelectionRange(pos, pos); }
   };
   el.querySelectorAll('[data-up]').forEach(b => b.onclick = () => openUpgrade(b.dataset.up));
+  el.querySelectorAll('[data-skip]').forEach(b => b.onclick = () => useLabSkip(b.dataset.skip));
 }
 
 /* =========================================================
@@ -2423,6 +2465,8 @@ function showUpdate(){
     <h3 class="upd-title">Update V${VERSION}</h3>
     <p class="upd-sub">EXPLORE WHAT'S NEW:</p>
     <ul class="upd-list">${WHATS_NEW.map(t => `<li>${t}</li>`).join('')}</ul>
+    <p class="upd-sub" style="margin-top:2px">EVERY UPDATE SO FAR:</p>
+    <div class="upd-hist">${RELEASES.map(([v, t]) => `<div class="upd-row${v === VERSION ? ' now' : ''}"><b>V${v}</b><span>${t}</span></div>`).join('')}</div>
     <button class="btn primary wide" data-close>Let's play</button>`);
   const card = document.querySelector('#modal .modal-card');
   if (card) card.classList.add('upd-card');
