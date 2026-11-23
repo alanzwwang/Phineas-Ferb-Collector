@@ -437,6 +437,32 @@ body.opening .stats{margin:7px 0 3px}
 .foot{margin-top:16px;text-align:center;font-size:9px;line-height:1.7;color:#61739a}
 .foot .linkish{background:none;border:0;padding:0;font-size:9px;color:#8194b8;text-decoration:underline;text-underline-offset:2px}
 
+/* what's new — gold + seafoam */
+.modal-card.upd-card{background:linear-gradient(168deg,#0d3038 0%,#0a2330 48%,#081a28 100%);
+  border:1px solid rgba(84,232,206,.42);
+  box-shadow:0 30px 70px -30px #000, 0 0 0 1px rgba(255,209,102,.16), 0 0 46px -12px rgba(84,232,206,.42)}
+.modal-card.upd-card::before{content:'';position:absolute;left:14px;right:14px;top:0;height:3px;border-radius:0 0 4px 4px;
+  background:linear-gradient(90deg,#ffd166,#ffe9a8 35%,#54e8ce 70%,#3fb6ff)}
+.upd-tag{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.16em;color:#2a1206;
+  background:linear-gradient(180deg,#ffe9a8,#ffc247 60%,#f5a623);padding:3px 11px;border-radius:999px;margin-bottom:10px;
+  box-shadow:0 6px 18px -6px #ffc247, inset 0 1px 0 rgba(255,255,255,.7);animation:updPulse 2.6s ease-in-out infinite}
+@keyframes updPulse{0%,100%{box-shadow:0 6px 18px -6px #ffc247, inset 0 1px 0 rgba(255,255,255,.7)}
+  50%{box-shadow:0 6px 24px -4px #54e8ce, 0 0 0 1px rgba(84,232,206,.5), inset 0 1px 0 rgba(255,255,255,.7)}}
+.upd-title{margin:0;font-size:22px;letter-spacing:.01em;
+  background:linear-gradient(92deg,#ffe9a8,#ffc247 42%,#9df5e0 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.upd-sub{font-size:9.5px;letter-spacing:.18em;font-weight:900;color:#54e8ce;margin:11px 0 8px;
+  text-shadow:0 0 18px rgba(84,232,206,.5)}
+.upd-list{margin:0 0 14px;padding:0;list-style:none;font-size:11.5px;line-height:1.6;color:#d8f2f4}
+.upd-list li{position:relative;margin:6px 0;padding-left:15px}
+.upd-list li::before{content:'◆';position:absolute;left:0;top:0;font-size:9px;color:#ffd166;
+  text-shadow:0 0 10px rgba(255,209,102,.8)}
+.upd-list b{color:#9df5e0}
+.upd-card .btn.primary{background:linear-gradient(180deg,#ffe9a8,#ffc247 55%,#f5a623);color:#2a1206;
+  box-shadow:0 12px 26px -12px #ffc247, inset 0 1px 0 rgba(255,255,255,.7)}
+.upd-card .btn.primary:hover{box-shadow:0 12px 30px -10px #54e8ce, 0 0 0 1px rgba(84,232,206,.5)}
+.upd-card .x{border-color:rgba(84,232,206,.45);color:#9df5e0}
+
 /* emblems */
 .emblem{position:absolute;inset:0;display:grid;place-items:center;overflow:hidden;
   background:radial-gradient(70% 60% at 50% 40%,rgba(255,255,255,.07),transparent 72%)}
@@ -508,7 +534,7 @@ body.opening .stats{margin:7px 0 3px}
   <main id="screen"></main>
 
   <footer class="foot">
-    <div>Fan-made summer project · Not affiliated with Disney · Progress saves in this browser</div>
+    <div>Fan-made summer project · Not affiliated with Disney · Progress saves in this browser · <b id="verTag"></b></div>
     <div style="margin-top:3px"><button class="linkish" id="resetBtn">Reset save</button></div>
   </footer>
 </div>
@@ -527,6 +553,19 @@ const RSHADE = ['#dbe3ef','#d6f4e5','#c8e2ff','#eed8ff','#fff0bb'];
 const TMULT = [1, 1.25, 1.6, 2.1, 2.8];
 const MAX_EQ = 5;
 const KEY = 'pf_summer_collector_v2';
+/* release version + what this build adds (bump both on every update)
+   history: 1.0 base game · 1.1 ten languages · 1.2 standalone fix ·
+   2.0 new things + star pack + selling · 2.1 990 new characters · 2.2 pack pull rule ·
+   2.3 multiple upgrades · 2.4 offline income · 2.5 offline tiers ·
+   2.6 500B cutoff · 2.7 1T-only pull · 2.8 Trillion Club pull · 3.0 update popups · 3.1 popup styling */
+const VERSION = '3.1.0';
+const WHATS_NEW = [
+  'Update popups like this one — every release now announces itself',
+  'Gold + seafoam styling, and the version number in the footer',
+  'Packs <b>1–90</b> give 5 cards; the <b>Trillion Club</b> chapter (91–100) gives 1',
+  'Offline income: <b>50% → 25% → 10%</b>, 2 hours, 1 day, then no limit',
+  'Sell any card for <b>10%</b> of its pack price; run several upgrades at once'
+];
 const INK = '#121a2c';
 
 /* =========================================================
@@ -1583,7 +1622,7 @@ function rid(){ return Date.now().toString(36) + '-' + Math.random().toString(36
 const DEF = {
   coins:120, cards:[], packsOpened:0, equipped:[], lifetime:120, unclaimed:0,
   upgrade:null, upgrades:[], notice:'', sound:false, fast:false, smart:true, lang:null,
-  lastSeen:0,
+  lastSeen:0, seenVersion:'',
   playerName:'You', rivals:null, asked:{}, gStreak:0,
   level:'Easy', category:'Characters', triviaMode:'level', q:null, answer:null, run:null, message:'', msgKind:'',
   chapter:0, pack:0, cardChapter:'all', page:'packs', labSearch:'', search:'', cfilter:'all', rfilter:'all', sort:'new', limit:24
@@ -1667,12 +1706,13 @@ if (Number.isFinite(s.lastSeen)){
   }
 }
 s.lastSeen = Date.now();
+let pendingUpdate = s.seenVersion !== VERSION;
 
 function save(){
   try {
     localStorage.setItem(KEY, JSON.stringify({
       coins:s.coins, cards:s.cards, packsOpened:s.packsOpened, equipped:s.equipped,
-      lifetime:s.lifetime, unclaimed:s.unclaimed, upgrades:s.upgrades, notice:s.notice, lastSeen:Date.now(),
+      lifetime:s.lifetime, unclaimed:s.unclaimed, upgrades:s.upgrades, notice:s.notice, lastSeen:Date.now(), seenVersion:s.seenVersion,
       sound:s.sound, fast:s.fast, smart:s.smart, lang:s.lang, playerName:s.playerName, rivals:s.rivals,
       asked:s.asked, gStreak:s.gStreak, level:s.level, category:s.category, triviaMode:s.triviaMode,
       chapter:s.chapter, pack:s.pack, cardChapter:s.cardChapter, sort:s.sort, limit:s.limit
@@ -2373,6 +2413,20 @@ function awayText(ms){
   const d = Math.floor(h / 24), rh = h % 24;
   return d + ' day' + (d !== 1 ? 's' : '') + (rh ? ' ' + rh + ' hr' : '');
 }
+function showUpdate(){
+  if (!pendingUpdate) return;
+  pendingUpdate = false;
+  s.seenVersion = VERSION;
+  save();
+  openModal(`<button class="x" data-close>✕</button>
+    <div class="upd-tag">NEW!!!</div>
+    <h3 class="upd-title">Update V${VERSION}</h3>
+    <p class="upd-sub">EXPLORE WHAT'S NEW:</p>
+    <ul class="upd-list">${WHATS_NEW.map(t => `<li>${t}</li>`).join('')}</ul>
+    <button class="btn primary wide" data-close>Let's play</button>`);
+  const card = document.querySelector('#modal .modal-card');
+  if (card) card.classList.add('upd-card');
+}
 function showOfflineReport(){
   const r = offlineReport;
   offlineReport = null;
@@ -2388,7 +2442,9 @@ function showOfflineReport(){
     <div class="mut-preview"><span>Total offline</span><b class="gold">🪙 ${fmt(r.coins)}</b></div>
     ${rows}
     <p class="hint" style="margin:6px 0 0">Already added to your coins. Offline income has no time limit: 50% for the first 2 hours, 25% up to 24 hours, then 10%.</p>
-    <button class="btn primary wide" data-close>Collect</button>`);
+    <button class="btn primary wide" id="offlineOk">Collect</button>`);
+  const ok = document.getElementById('offlineOk');
+  if (ok) ok.onclick = () => { closeModal(); setTimeout(showUpdate, 320); };
 }
 function openSummary(cards, p, again){
   const can = s.coins >= p.cost;
@@ -2618,6 +2674,9 @@ document.getElementById('langBtn').onclick = openLangModal;
 setInterval(tick, 250);
 setInterval(save, 5000);
 if (offlineReport) setTimeout(showOfflineReport, 450);
+else if (pendingUpdate) setTimeout(showUpdate, 900);
+const verTag = document.getElementById('verTag');
+if (verTag) verTag.textContent = 'v' + VERSION;
 </script>
 </body>
 </html>
