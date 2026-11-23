@@ -579,7 +579,7 @@ const MAX_EQ = 5;
 const KEY = 'pf_summer_collector_v2';
 /* release version + what this build adds (bump both on every update)
    every release uses a three-part number: major.feature.patch */
-const VERSION = '4.0.0';
+const VERSION = '4.0.1';
 const RELEASES = [
   ['1.0.0', 'Base game: 100 packs · 1,000 cards'],
   ['1.1.0', 'Ten languages + localized pack names'],
@@ -597,14 +597,13 @@ const RELEASES = [
   ['3.1.0', 'Gold + seafoam popup styling'],
   ['3.1.1', 'One free lab skip for every player'],
   ['3.1.2', 'Full update history in this card'],
-  ['4.0.0', '10,000 packs · 100,000 new characters · quintillion prices']
+  ['4.0.0', '10,000 packs · 100,000 new characters · quintillion prices'],
+  ['4.0.1', 'All 10,000 packs renamed']
 ];
 const WHATS_NEW = [
-  '<b>10,000 packs</b> and <b>100,000</b> brand-new characters',
-  'Prices now climb to <b>1 quintillion</b> (1e18) coins',
-  'Packs above <b>1 quadrillion</b> give <b>1 card</b>; everything below gives 5',
-  'Every pack has ten original characters with their own art and colour',
-  'Version numbers are now three-part for every past release'
+  'All <b>10,000</b> packs have <b>new names</b> — no more repeated "Theme · Descriptor"',
+  'Each chapter draws from its own word bank, so names fit the theme',
+  'The 100 landmark packs keep their hand-written, translated names'
 ];
 const INK = '#121a2c';
 
@@ -954,8 +953,54 @@ for (let i = CRITTER_VARIANTS.length - 1; i > 0; i--){
   const t = CRITTER_VARIANTS[i]; CRITTER_VARIANTS[i] = CRITTER_VARIANTS[j]; CRITTER_VARIANTS[j] = t;
 }
 
+
+/* pack-name word banks: one per chapter, 40 modifiers x 26 nouns = 1,040 names each */
+const PACK_WORDS = [
+  {m:['Coral','Tidal','Sunkissed','Saltwater','Sandy','Breezy','Golden','Sunlit','Drifting','Foamy','Seashell','Palm','Lagoon','Surf','Boardwalk','Pier','Coconut','Mango','Citrus','Iced','Fizzy','Popsicle','Watermelon','Lemon','Sprinkler','Garden Hose','Backyard','Kite','Puddle','Flip-Flop','Sunhat','Beach Towel','Cooler','Picnic','Firefly','Starfruit','Blueberry','Peach','Mint','Vanilla'],
+   n:['Tide','Shores','Wave','Coast','Reef','Dune','Breeze','Current','Splash','Lagoon','Harbor','Cove','Promenade','Carnival','Carousel','Pier','Parade','Market','Stand','Patio','Hammock','Sunset','Dawn','Sandbar','Boardwalk','Swell']},
+  {m:['Downtown','Uptown','Main Street','Corner','Bus Stop','Mailbox','Scooter','Bicycle','Mall','Food Court','Slushy','Cookie','Bake Sale','Go-Kart','Treehouse','Clubhouse','Sidewalk','Lamppost','Fire Hydrant','Town Hall','City Hall','Rooftop','Alley','Crosswalk','Newsstand','Arcade','Bowling','Roller Rink','Parking Lot','Drive-Thru','Suburb','Cul-de-Sac','Front Porch','Garage','Workshop','Shed','Attic','Basement','Backlot','Courtyard'],
+   n:['Dash','Rush','Stroll','Loop','Circuit','Block','Square','Plaza','Strip','Lane','Avenue','Boulevard','Crossing','Stop','Route','Detour','Shortcut','Errand','Delivery','Parade','Market','Fair','Sale','Shift','Commute','Weekend']},
+  {m:['Fedora','Laser','Briefcase','Cipher','Spyglass','Encrypted','Classified','Covert','Stealth','Silent','Shadow','Nightfall','Midnight','Satellite','Wiretap','Microfilm','Codebook','Badge','Agency','Bunker','Lair','Vault','Safehouse','Lookout','Rooftop','Getaway','Undercover','Disguised','Decoy','Signal','Radio','Beacon','Scanner','Drone','Glider','Submarine','Jetpack','Grapple','Silencer','Alias'],
+   n:['Mission','Protocol','File','Dossier','Briefing','Debrief','Operation','Extraction','Rendezvous','Stakeout','Patrol','Watch','Signal','Frequency','Cipher','Code','Contact','Handler','Agent','Asset','Gadget','Blueprint','Map','Trail','Lead','Handoff']},
+  {m:['Plasma','Magnet','Voltage','Static','Sprocket','Piston','Rivet','Fuse','Bolt','Gear','Raygun','Hypno','Clone','Shrink','Freeze','Heat','Bubble','Sludge','Goo','Disco','Sock','Toaster','Muffin','Cheese','Pickle','Snooze','Grumble','Birthday','Backstory','Evil','Dastardly','Nefarious','Sinister','Clever','Doomed','Rebooted','Overclocked','Turbo','Prototype','Calibrated'],
+   n:['Inator','Machine','Device','Contraption','Invention','Gadget','Engine','Reactor','Generator','Lab','Bench','Workshop','Blueprint','Prototype','Test','Trial','Error','Explosion','Button','Lever','Switch','Dial','Gauge','Panel','Console','Schematic']},
+  {m:['Popcorn','Red Carpet','Silver Screen','Technicolor','Widescreen','Blockbuster','Indie','Sequel','Prequel','Remake','Director','Final','Opening','Closing','Midnight','Matinee','Premiere','Festival','Cameo','Stunt','Blooper','B-Roll','Montage','Slow-Mo','Chase','Heist','Musical','Horror','Rom-Com','Sci-Fi','Western','Animated','Subtitled','Dubbed','Remastered','Uncut','Extended','Lost','Restored','Bootleg'],
+   n:['Reel','Scene','Take','Cut','Shot','Frame','Script','Screen','Stage','Set','Studio','Backlot','Premiere','Screening','Trailer','Teaser','Credits','Finale','Montage','Cameo','Stunt','Sequel','Trilogy','Saga','Epic','Poster']},
+  {m:['Tinsel','Mistletoe','Candy Cane','Eggnog','Gingerbread','Snowfall','Frosty','Jolly','Merry','Silent Night','Midnight','Firecracker','Pumpkin','Costume','Spooky','Haunted','Easter','Shamrock','Valentine','Cupid','Birthday','Anniversary','New Year','Thanksgiving','Bonfire','Lantern','Fireplace','Stocking','Wreath','Sleigh','Reindeer','Elf','Snowman','Confetti','Parade','Feast','Toast','Carol','Ornament','Giftwrap'],
+   n:['Bash','Party','Feast','Eve','Morning','Night','Parade','Ball','Gala','Fete','Festival','Gathering','Celebration','Countdown','Toast','Wish','Gift','Surprise','Tradition','Memory','Story','Tale','Glow','Cheer','Supper','Mingle']},
+  {m:['Portal','Mirror','Quantum','Glitch','Warp','Phase','Paradox','Echo','Rift','Chrome','Neon','Void','Circuit','Hologram','Shard','Prism','Fractal','Tesseract','Wormhole','Singular','Inverse','Reversed','Sideways','Fractured','Shifting','Unstable','Phantom','Astral','Binary','Pixel','Vector','Matrix','Cyber','Clockwork','Cursed','Blessed','Forgotten','Alternate','Static','Liminal'],
+   n:['Dimension','Universe','Reality','Timeline','Echo','Rift','Gate','Portal','Loop','Spiral','Corridor','Threshold','Anomaly','Paradox','Glitch','Signal','Frequency','Dream','Mirage','Mirror','Shard','Fragment','Orbit','Drift','Fold','Void']},
+  {m:['Disco','Vinyl','Neon','Retro','Electric','Acoustic','Amplified','Distorted','Fuzzed','Reverb','Encore','Backstage','Spotlight','Midnight','Sunset','Summer','Slow','Fast','Loud','Soft','Funky','Groovy','Jazzy','Popping','Punk','Metal','Country','Classical','Karaoke','Mixtape','Cassette','Radio','Studio','Live','Unplugged','Remixed','Bootleg','B-Side','Headline','Soundcheck'],
+   n:['Beat','Rhythm','Melody','Chord','Riff','Solo','Chorus','Verse','Bridge','Hook','Track','Album','Single','Mixtape','Setlist','Encore','Show','Gig','Tour','Stage','Booth','Session','Jam','Anthem','Ballad','Groove']},
+  {m:['Mythic','Ancient','Forgotten','Legendary','Fabled','Cursed','Sacred','Silver','Golden','Obsidian','Emerald','Crimson','Moonlit','Sunken','Sleeping','Waking','Wandering','Hidden','Lost','Elder','Primeval','Arcane','Runic','Starfall','Stormbound','Thunderous','Whispering','Howling','Silent','Broken','Bound','Sealed','Awakened','Doomed','Blessed','Feral','Noble','Wicked','Kind','Dread'],
+   n:['Legend','Myth','Tale','Saga','Prophecy','Omen','Relic','Artifact','Totem','Idol','Shrine','Temple','Ruin','Crypt','Tomb','Lair','Den','Nest','Grove','Peak','Abyss','Depths','Realm','Kingdom','Throne','Chronicle']},
+  {m:['Cosmic','Nova','Aurum','Eclipse','Starlight','Singularity','Gilded','Royal','Obsidian','Platinum','Celestial','Radiant','Imperial','Meteor','Diamond','Infinity','Golden','Opal','Astral','Comet','Nebula','Quasar','Pulsar','Zenith','Aurora','Solar','Lunar','Stellar','Galactic','Timeless','Endless','Ultimate','Supreme','Prime','First','Final','Eternal','Boundless','Limitless','Sovereign'],
+   n:['Fortune','Hoard','Vault','Treasury','Crown','Throne','Empire','Dynasty','Legacy','Horizon','Expanse','Summit','Apex','Peak','Core','Heart','Spark','Flame','Star','Galaxy','Cosmos','Eternity','Infinity','Quintessence','Dawn','Zenith']}
+];
+const usedPackNames = new Set();
+CHAPTERS.forEach(ch => ch.themes.forEach(t => usedPackNames.add(t[0])));
+function chapterPackNames(ci){
+  const w = PACK_WORDS[ci] || PACK_WORDS[0];
+  const combos = [];
+  for (const m of w.m) for (const n of w.n) combos.push(m + ' ' + n);
+  const rnd = seeded(4400 + ci * 97);
+  for (let i = combos.length - 1; i > 0; i--){
+    const j = Math.floor(rnd() * (i + 1));
+    const t = combos[i]; combos[i] = combos[j]; combos[j] = t;
+  }
+  const out = [];
+  for (const c of combos){
+    if (out.length >= PACKS_PER_CHAPTER - 10) break;
+    if (usedPackNames.has(c)) continue;
+    usedPackNames.add(c);
+    out.push(c);
+  }
+  return out;
+}
+
 let packIndex = 0, lastCost = 0;
 CHAPTERS.forEach((ch, ci) => {
+  const chPackNames = chapterPackNames(ci);
   for (let j = 0; j < PACKS_PER_CHAPTER; j++){
     const i = packIndex++;
     const theme = ch.themes[j % ch.themes.length];
@@ -976,7 +1021,7 @@ CHAPTERS.forEach((ch, ci) => {
       pool:[]
     };
     if (i === PACK_TOTAL - 1) pack.name = 'The Quintillion Pack';
-    else if (j >= 10) pack.name = theme[0] + ' · ' + PACK_DESC[Math.min(PACK_DESC.length - 1, Math.floor(j / 10)) % PACK_DESC.length];
+    else if (j >= 10) pack.name = chPackNames[j - 10] || (theme[0] + ' ' + (j + 1));
     for (let k = 0; k < 10; k++){
       const cardIndex = CARDS.length;
       const nm = charName(cardIndex);
