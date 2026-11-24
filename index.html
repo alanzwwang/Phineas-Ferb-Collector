@@ -468,7 +468,8 @@ body.opening .stats{margin:7px 0 3px}
 .foot{margin-top:16px;text-align:center;font-size:9px;line-height:1.7;color:#61739a}
 #credit{position:fixed;left:8px;bottom:6px;z-index:60;max-width:70vw;padding:4px 7px;border-radius:7px;
   background:rgba(6,14,24,.72);border:1px solid rgba(84,232,206,.22);color:#a9c6d6;font-size:8.5px;
-  line-height:1.35;letter-spacing:.01em;pointer-events:none;backdrop-filter:blur(4px)}
+  line-height:1.35;letter-spacing:.01em;backdrop-filter:blur(4px)}
+#credit a{color:#9df5e0;text-decoration:underline;text-underline-offset:2px;pointer-events:auto}
 @media (max-width:520px){#credit{font-size:7.5px;max-width:88vw}}
 .foot .linkish{background:none;border:0;padding:0;font-size:9px;color:#8194b8;text-decoration:underline;text-underline-offset:2px}
 
@@ -581,7 +582,7 @@ body.opening .stats{margin:7px 0 3px}
     <div>Fan-made summer project · Not affiliated with Disney · Progress saves in this browser · <b id="verTag"></b></div>
     <div style="margin-top:3px"><button class="linkish" id="resetBtn">Reset save</button></div>
   </footer>
-  <div id="credit">idea from Huga Aiba, visit his website at: sweet-taffy-2e2425.netlify.app</div>
+  <div id="credit">idea from Huga Aiba, visit his website at: <a href="https://sweet-taffy-2e2425.netlify.app" target="_blank" rel="noopener">sweet-taffy-2e2425.netlify.app</a></div>
 </div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="modal" class="modal" aria-hidden="true"></div>
@@ -600,7 +601,7 @@ const MAX_EQ = 5;
 const KEY = 'pf_summer_collector_v2';
 /* release version + what this build adds (bump both on every update)
    every release uses a three-part number: major.feature.patch */
-const VERSION = '4.3.1';
+const VERSION = '4.3.2';
 /* ADMIN ABUSE event: ended in 4.1.1 — production is back to 1x */
 const CARD_RATE_CAP = 5e18; // 5 quintillion coins/sec per card
 const BOOST_MULT = 3;
@@ -635,11 +636,12 @@ const RELEASES = [
   ['4.2.0', '100 chapters · 1 sextillion final pack · 5 quintillion/sec card cap'],
   ['4.3.0', 'Realistic art: trees, animals and objects; names now match the picture'],
   ['4.3.1', 'Updated Trillion Club chapter blurb for the sextillion finish'],
+  ['4.3.2', 'Bug fixes'],
 ];
 const WHATS_NEW = [
-  'Trillion Club chapters now describe the <b>sextillion finish</b> instead of the old trillion text',
-  'Final pack: <b>1.00Sx</b>, sells for 100.00Qi, upgrade costs 2.00Sx',
-  'Card ceiling still <b>5.00Qi/sec</b>'
+  '<b>Bug fixes</b> and general stability improvements',
+  'The credit line is now a working link to the original idea\'s site',
+  'No gameplay changes beyond the fixes'
 ];
 const INK = '#121a2c';
 
@@ -760,6 +762,7 @@ function detectLang(){
 
 /* number formatting */
 function fmt(n){
+  if (typeof n === 'bigint') n = Number(n);
   n = Number(n) || 0;
   const a = Math.abs(n);
   if (a >= 1e21) return (n / 1e21).toFixed(2) + 'Sx';
@@ -772,10 +775,14 @@ function fmt(n){
   return (Math.round(n * 100) / 100).toLocaleString(undefined, {maximumFractionDigits:2});
 }
 function fmtCost(n){
+  if (typeof n === 'bigint') return n < 1000000n ? n.toLocaleString() : fmt(n);
   n = Math.round(n);
   return n < 1e6 ? n.toLocaleString() : fmt(n);
 }
 const $ = sel => document.querySelector(sel);
+/* exact coin maths: balances exceed Number precision past 9e15 */
+const toBI = v => (typeof v === 'bigint' ? v : BigInt(Math.max(0, Math.floor(Number(v) || 0))));
+const costBI = n => BigInt(Math.max(0, Math.round(Number(n) || 0)));
 const el = document.getElementById('screen');
 
 /* =========================================================
@@ -1795,8 +1802,9 @@ try {
 } catch(e){}
 if (!Array.isArray(s.cards)) s.cards = [];
 if (!Array.isArray(s.equipped)) s.equipped = [];
-if (!Number.isFinite(s.coins) || s.coins < 0) s.coins = 120;
-if (!Number.isFinite(s.unclaimed) || s.unclaimed < 0) s.unclaimed = 0;
+s.coins = toBI(s.coins);
+if (s.coins < 0n) s.coins = 120n;
+s.unclaimed = toBI(s.unclaimed);
 if (!Number.isFinite(s.lifetime) || s.lifetime < 0) s.lifetime = 120;
 if (!Array.isArray(s.rivals) || s.rivals.length !== RIVAL_SEED.length) s.rivals = freshRivals();
 if (!s.rivalScale){
@@ -1865,7 +1873,7 @@ if (Number.isFinite(s.lastSeen)){
   if (away > 60000 && cps > 0){
     const res = offlineGain(cps, away);
     if (res.coins > 0){
-      s.coins += res.coins;
+      s.coins += toBI(res.coins);
       s.lifetime += res.coins;
       offlineReport = {ms:away, coins:res.coins, parts:res.parts, cps:cps};
     }
@@ -1877,8 +1885,8 @@ let pendingUpdate = s.seenVersion !== VERSION;
 function save(){
   try {
     localStorage.setItem(KEY, JSON.stringify({
-      coins:s.coins, cards:s.cards, packsOpened:s.packsOpened, equipped:s.equipped,
-      lifetime:s.lifetime, unclaimed:s.unclaimed, upgrades:s.upgrades, notice:s.notice, lastSeen:Date.now(), seenVersion:s.seenVersion, skips:s.skips, rivalScale:s.rivalScale, skipGift5:s.skipGift5,
+      coins:s.coins.toString(), cards:s.cards, packsOpened:s.packsOpened, equipped:s.equipped,
+      lifetime:s.lifetime, unclaimed:s.unclaimed.toString(), upgrades:s.upgrades, notice:s.notice, lastSeen:Date.now(), seenVersion:s.seenVersion, skips:s.skips, rivalScale:s.rivalScale, skipGift5:s.skipGift5,
       sound:s.sound, fast:s.fast, smart:s.smart, lang:s.lang, playerName:s.playerName, rivals:s.rivals,
       asked:s.asked, gStreak:s.gStreak, level:s.level, category:s.category, triviaMode:s.triviaMode,
       chapter:s.chapter, group:s.group, pack:s.pack, packPage:s.packPage, cardChapter:s.cardChapter, sort:s.sort, limit:s.limit
@@ -1942,8 +1950,9 @@ function smartEquip(cards){
 }
 function buyPack(again){
   const p = PACKS[s.pack];
-  if (s.coins < p.cost){ toast(`Need ${fmtCost(p.cost - s.coins)} more coins`, 'bad'); sfx('error'); return; }
-  s.coins -= p.cost;
+  const price = costBI(p.cost);
+  if (s.coins < price){ toast(`Need ${fmtCost(price - s.coins)} more coins`, 'bad'); sfx('error'); return; }
+  s.coins -= price;
   s.packsOpened++;
   const pulled = Array.from({length:p.pull}, () => drawCard(p));
   s.cards.push(...pulled);
@@ -1975,12 +1984,12 @@ function startUpgrade(id){
   const c = byId(id);
   if (!c) return;
   if (s.upgrades.some(u => u.cardId === id)){ toast('That card is already upgrading', 'bad'); return; }
-  const cost = upgradeCost(c);
+  const cost = costBI(upgradeCost(c));
   if (s.coins < cost){ toast(`Need ${fmtCost(cost)} coins for this upgrade`, 'bad'); sfx('error'); return; }
   s.coins -= cost;
   const mins = upgradeMinutes(c);
   const now = Date.now();
-  s.upgrades.push({cardId:id, cost, startedAt:now, endsAt:now + mins * 60000});
+  s.upgrades.push({cardId:id, cost:Number(cost), startedAt:now, endsAt:now + mins * 60000});
   s.notice = '';
   closeModal(); save(); sfx('upgrade'); render();
   toast(`Upgrade started · ${durationText(mins)} · ${s.upgrades.length} running`, 'good');
@@ -2003,7 +2012,7 @@ function sellCard(id){
   const price = sellPrice(c);
   if (!confirm(`Sell ${defOf(c).n} for ${fmt(price)} coins?`)) return;
   s.cards = s.cards.filter(x => x.id !== id);
-  s.coins += price;
+  s.coins += toBI(price);
   save(); closeModal(); render();
   toast(`Sold for ${fmt(price)} coins`, 'good');
 }
@@ -2029,7 +2038,7 @@ function sellDuplicates(){
   document.getElementById('confirmSellDup').onclick = () => {
     const ids = new Set(extras.map(c => c.id));
     s.cards = s.cards.filter(c => !ids.has(c.id));
-    s.coins += total;
+    s.coins += toBI(total);
     save(); closeModal(); render();
     toast(`Sold ${extras.length} cards for ${fmt(total)} coins`, 'good');
   };
@@ -2041,13 +2050,19 @@ function sellDuplicates(){
 let lastFrame = performance.now();
 let tickN = 0;
 let boostWas = boostActive();
+let incomeFrac = 0;
 function tick(){
   const now = performance.now();
   const dt = Math.min(2, Math.max(0, (now - lastFrame) / 1000));
   lastFrame = now;
   if (!document.hidden && !document.webkitHidden){
     const g = incomePerSecond() * dt;
-    if (g > 0){ s.unclaimed += g; s.lifetime += g; }
+    if (g > 0){
+      incomeFrac += g;
+      const whole = Math.floor(incomeFrac);
+      if (whole >= 1){ s.unclaimed += BigInt(whole); incomeFrac -= whole; }
+      s.lifetime += g;
+    }
     for (const r of s.rivals) r.coins += r.cps * dt;
   }
   const due = s.upgrades.filter(u => u.endsAt <= Date.now());
@@ -2088,7 +2103,7 @@ function updateHUD(){
   set('incomeRate', fmt(incomePerSecond()));
   set('unclaimed', fmt(s.unclaimed));
   const claim = document.getElementById('claimCoins');
-  if (claim) claim.disabled = Math.floor(s.unclaimed) < 1;
+  if (claim) claim.disabled = s.unclaimed < 1n;
   const banner = document.getElementById('labBanner');
   if (banner){
     if (s.upgrades.length){
@@ -2118,7 +2133,7 @@ function updateHUD(){
   const sb = document.getElementById('soundBtn');
   if (sb) sb.textContent = s.sound ? '🔊' : '🔈';
   const buy = document.getElementById('openPackBtn');
-  if (buy) buy.disabled = s.coins < PACKS[s.pack].cost;
+  if (buy) buy.disabled = s.coins < costBI(PACKS[s.pack].cost);
 }
 function esc(x){
   return String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -2295,8 +2310,8 @@ function renderPacks(){
   };
   const best = document.getElementById('bestBtn');
   best.onclick = () => {
-    const aff = PACKS.filter(p => p.cost <= s.coins).sort((a,b) => b.cost - a.cost)[0];
-    const target = aff || PACKS.find(p => p.cost > s.coins) || PACKS[0];
+    const aff = PACKS.filter(p => costBI(p.cost) <= s.coins).sort((a,b) => b.cost - a.cost)[0];
+    const target = aff || PACKS.find(p => costBI(p.cost) > s.coins) || PACKS[0];
     s.pack = target.i; s.chapter = target.chapter;
     s.packPage = Math.floor((target.i % PACKS_PER_CHAPTER) / 50);
     save(); render();
@@ -2309,7 +2324,7 @@ function openPackModal(i){
   const p = PACKS[i];
   s.chapter = p.chapter;
   const own = packOwned(i);
-  const afford = s.coins >= p.cost;
+  const afford = s.coins >= costBI(p.cost);
   const cards = p.pool.map(ci => `<span class="chip ${hasCard(ci) ? 'got' : ''}">${esc(CARDS[ci].n)}</span>`).join('');
   openModal(`<button class="x" data-close>✕</button>
     <div class="pack-hero"><span class="ico" style="--tone:${p.color}">${p.icon}</span><div><h3>${packName(p)}</h3><p>Chapter ${p.chapter + 1} · Pack ${(i + 1).toLocaleString()} of ${PACKS.length.toLocaleString()}</p></div></div>
@@ -2327,7 +2342,7 @@ function openPackModal(i){
       <label class="switch"><input type="checkbox" id="smartSw" ${s.smart ? 'checked' : ''}> Smart equip</label>
     </div>
     <button class="btn primary wide" id="openPackBtn" ${afford ? '' : 'disabled'}>Open ${packName(p)} — ${fmtCost(p.cost)} coins</button>
-    ${afford ? '' : `<p class="hint center" style="margin-top:6px">Need ${fmtCost(p.cost - s.coins)} more coins.</p>`}
+    ${afford ? '' : `<p class="hint center" style="margin-top:6px">Need ${fmtCost(costBI(p.cost) - s.coins)} more coins.</p>`}
     <p class="hint" style="margin-top:7px">Fast open skips the flip animation. Smart equip swaps in new cards when they beat your weakest equipped card.</p>`);
   const f = document.getElementById('fastSw');
   if (f) f.onchange = () => { s.fast = f.checked; save(); };
@@ -2542,7 +2557,7 @@ function renderCards(){
    ========================================================= */
 function renderLab(){
   const list = s.cards.slice().sort((a,b) => {
-    const A = upgradeCost(a) <= s.coins, B = upgradeCost(b) <= s.coins;
+    const A = costBI(upgradeCost(a)) <= s.coins, B = costBI(upgradeCost(b)) <= s.coins;
     if (A !== B) return A ? -1 : 1;
     return A ? eff(b) - eff(a) : upgradeCost(a) - upgradeCost(b);
   }).filter(c => !s.labSearch || defOf(c).n.toLowerCase().includes(s.labSearch.toLowerCase())).slice(0, 30);
@@ -2564,7 +2579,7 @@ function renderLab(){
     <div class="search" style="display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);margin-bottom:8px"><span>🔎</span><input id="labSearch" placeholder="Search your collection" value="${esc(s.labSearch || '')}" style="flex:1;background:none;border:0;outline:none;font-size:11.5px"></div>
     ${list.length ? list.map(c => {
       const busy = s.upgrades.some(u => u.cardId === c.id);
-      return `<div class="pick-row"><div><div class="pr-name">${esc(defOf(c).n)}</div><div class="pr-meta">🪙 ${fmt(eff(c))}/s · cost ${fmtCost(upgradeCost(c))} · ${durationText(upgradeMinutes(c))}</div></div><button class="pr-btn" data-up="${c.id}" ${busy || s.coins < upgradeCost(c) ? 'disabled' : ''}>${busy ? 'Running' : 'Upgrade'}</button></div>`;
+      return `<div class="pick-row"><div><div class="pr-name">${esc(defOf(c).n)}</div><div class="pr-meta">🪙 ${fmt(eff(c))}/s · cost ${fmtCost(upgradeCost(c))} · ${durationText(upgradeMinutes(c))}</div></div><button class="pr-btn" data-up="${c.id}" ${busy || s.coins < costBI(upgradeCost(c)) ? 'disabled' : ''}>${busy ? 'Running' : 'Upgrade'}</button></div>`;
     }).join('')
       : '<p class="hint">No cards match. Open packs first.</p>'}
   </section>`;
@@ -2627,7 +2642,7 @@ function openUpgrade(id){
   const c = byId(id);
   if (!c) return;
   if (s.upgrades.some(u => u.cardId === id)){ toast('That card is already upgrading', 'bad'); return; }
-  const cost = upgradeCost(c), can = s.coins >= cost;
+  const cost = upgradeCost(c), can = s.coins >= costBI(cost);
   openModal(`<button class="x" data-close>✕</button><h3>Upgrade ${esc(defOf(c).n)}?</h3>
     <p class="sub">The Upgrade-inator replaces the current multiplier.</p>
     <div class="mut-preview"><span>Current</span><b>🪙 ${fmt(eff(c))}/s (${c.m || 1}×)</b></div>
@@ -2690,13 +2705,13 @@ function showOfflineReport(){
   if (ok) ok.onclick = () => { closeModal(); setTimeout(showUpdate, 320); };
 }
 function openSummary(cards, p, again){
-  const can = s.coins >= p.cost;
+  const can = s.coins >= costBI(p.cost);
   openModal(`<button class="x" data-close>✕</button><h3>${p.icon} ${packName(p)}</h3>
     <p class="sub">${cards.length} card${cards.length === 1 ? '' : 's'} added${s.smart ? ' · smart equip checked your slots' : ''}.</p>
     <div class="sum-grid">${cards.map(c => `<div>${cardHTML(c, {})}</div>`).join('')}</div>
     <button class="btn primary wide" id="againBtn" ${can ? '' : 'disabled'}>Open again — ${fmtCost(p.cost)}</button>
     <button class="btn ghost wide" data-close style="margin-top:5px">Done</button>
-    ${can ? '' : `<p class="hint center" style="margin-top:6px">Need ${fmtCost(p.cost - s.coins)} more coins.</p>`}
+    ${can ? '' : `<p class="hint center" style="margin-top:6px">Need ${fmtCost(costBI(p.cost) - s.coins)} more coins.</p>`}
     <p class="hint" style="margin-top:6px">${s.fast ? 'Fast open is on — this summary replaces the flip animation.' : 'Turn on <b>Fast open</b> in any pack window to skip the flip animation.'}</p>`);
   const a = document.getElementById('againBtn');
   if (a) a.onclick = () => { closeModal(); buyPack(true); };
@@ -2758,7 +2773,7 @@ function finishRun(){
     payout = r.correct ? LEVEL_PAY[s.level] : 0;
   }
   r.payout = payout; r.done = true;
-  s.coins += payout; s.lifetime += payout;
+  s.coins += toBI(payout); s.lifetime += payout;
   save();
 }
 function renderTrivia(){
@@ -2882,9 +2897,9 @@ document.querySelectorAll('[data-page]').forEach(b => {
   b.onclick = () => { s.page = b.dataset.page; s.message = ''; render(); window.scrollTo({top:0, behavior:'smooth'}); };
 });
 document.getElementById('claimCoins').onclick = () => {
-  const amount = Math.floor(s.unclaimed);
-  if (amount < 1) return;
-  s.unclaimed -= amount; s.coins += amount;
+  const amount = s.unclaimed;
+  if (amount < 1n) return;
+  s.unclaimed = 0n; s.coins += amount;
   save(); sfx('claim'); updateHUD();
   toast(`+${fmt(amount)} coins collected`, 'good');
   if (s.page === 'packs') renderPacks();
