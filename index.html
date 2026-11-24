@@ -138,6 +138,13 @@ p{margin:0 0 8px}
 .chapter-head .sub{margin:0}
 
 /* pack grid */
+.groups{display:flex;gap:6px;overflow-x:auto;padding:1px 0 7px;scrollbar-width:thin}
+.group{display:flex;align-items:center;gap:6px;white-space:nowrap;border:1px solid var(--line);
+  background:rgba(255,255,255,.04);color:#c9d8ee;border-radius:9px;padding:7px 10px;font-size:10px;font-weight:800;
+  letter-spacing:.02em}
+.group span{font-size:13px}
+.group.on{background:rgba(255,138,61,.16);border-color:rgba(255,138,61,.55);color:#ffd9b0}
+.chapters{display:flex;gap:7px;overflow-x:auto;padding:1px 0 8px;scrollbar-width:thin}
 .pager{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 9px;
   font-size:10.5px;color:#a9bcd8;letter-spacing:.02em}
 .pager .pg{border:1px solid rgba(120,180,220,.3);background:rgba(255,255,255,.05);color:#d7e6ff;
@@ -459,6 +466,10 @@ body.opening .stats{margin:7px 0 3px}
 #toast.good{border-color:rgba(69,199,146,.5);color:#a8f5cf}
 #toast.bad{border-color:rgba(224,85,111,.5);color:#ffb9ab}
 .foot{margin-top:16px;text-align:center;font-size:9px;line-height:1.7;color:#61739a}
+#credit{position:fixed;left:8px;bottom:6px;z-index:60;max-width:70vw;padding:4px 7px;border-radius:7px;
+  background:rgba(6,14,24,.72);border:1px solid rgba(84,232,206,.22);color:#a9c6d6;font-size:8.5px;
+  line-height:1.35;letter-spacing:.01em;pointer-events:none;backdrop-filter:blur(4px)}
+@media (max-width:520px){#credit{font-size:7.5px;max-width:88vw}}
 .foot .linkish{background:none;border:0;padding:0;font-size:9px;color:#8194b8;text-decoration:underline;text-underline-offset:2px}
 
 /* what's new — gold + seafoam */
@@ -570,6 +581,7 @@ body.opening .stats{margin:7px 0 3px}
     <div>Fan-made summer project · Not affiliated with Disney · Progress saves in this browser · <b id="verTag"></b></div>
     <div style="margin-top:3px"><button class="linkish" id="resetBtn">Reset save</button></div>
   </footer>
+  <div id="credit">idea from Huga Aiba, visit his website at: sweet-taffy-2e2425.netlify.app</div>
 </div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="modal" class="modal" aria-hidden="true"></div>
@@ -588,7 +600,7 @@ const MAX_EQ = 5;
 const KEY = 'pf_summer_collector_v2';
 /* release version + what this build adds (bump both on every update)
    every release uses a three-part number: major.feature.patch */
-const VERSION = '4.2.0';
+const VERSION = '4.3.0';
 /* ADMIN ABUSE event: ended in 4.1.1 — production is back to 1x */
 const CARD_RATE_CAP = 5e18; // 5 quintillion coins/sec per card
 const BOOST_MULT = 3;
@@ -621,12 +633,13 @@ const RELEASES = [
   ['4.1.2', 'Card income capped at 10T/sec; top pack confirmed at 1Qi'],
   ['4.1.3', 'First/last page buttons + a jump to the 1Qi final pack'],
   ['4.2.0', '100 chapters · 1 sextillion final pack · 5 quintillion/sec card cap'],
+  ['4.3.0', 'Realistic art: trees, animals and objects; names now match the picture'],
 ];
 const WHATS_NEW = [
-  '<b>100 chapters</b> — 100 packs each, named I–X across ten themes',
-  'The final pack now costs <b>1 sextillion</b> (1.00Sx)',
-  'A single card can now earn up to <b>5 quintillion/sec</b> (5.00Qi)',
-  'Still 10,000 packs and 100,000 unique characters with their own art'
+  'New <b>realistic art</b> — oaks, pines, flowers, mushrooms, cacti, birds, fish, cats, dogs and more',
+  'Character names now <b>match the picture</b> (e.g. "Sylimix Cat", "Xandur Flower")',
+  'Credit to the original idea added in the bottom-left corner',
+  'Everything else unchanged: 100 chapters, 100,000 cards, 1Sx final pack, 5Qi/sec cap'
 ];
 const INK = '#121a2c';
 
@@ -955,19 +968,20 @@ const MAX_COST = 1e21;
 
 const SPECIES = ['Golem','Slime','Sprite','Bot','Titan','Drone','Ghost','Wisp','Blob','Crab','Snail','Yeti','Reindeer','Cactus','Parrot','Cat','Duck','Goose','Comet','Toaster','Muffin','Puppet','Plane','Pencil','Eraser','Raccoon','Mouse','Pumpkin','Bee','Balloon','Tiger','Shark','Dragon','Gecko','Turtle','Spider','Bear','Eagle','Porcupine','Narwhal','Vulture','Pug','Turkey','Bat','Bunny','Moth','Penguin','Slug','Lynx','Rooster','Elephant','Mole','Pixie','Phoenix','Puffer','Jet','Vacuum','Pigeon','Newt','Mammoth','Squid','Otter','Walrus','Mantis','Ferret','Badger','Falcon','Bison','Moose','Chameleon','Scorpion','Jellyfish','Starfish','Seahorse','Hedgehog','Koala','Panda','Lemur','Sloth','Armadillo','Pelican','Toucan','Flamingo','Piranha','Anglerfish','Sasquatch','Gremlin','Warlock','Sphinx','Cyclops','Kraken','Griffin','Basilisk','Gargoyle','Wyvern','Troll','Banshee','Manticore','Wraith','Imp','Ogre','Gnome','Goblin','Harpy','Chimera','Hydra','Minotaur','Pegasus','Unicorn','Behemoth','Leviathan','Serpent','Viper','Cobra','Axolotl','Tapir','Quokka','Wombat','Meerkat','Ibex','Yak','Okapi','Pangolin','Capybara','Llama','Alpaca','Manatee','Dolphin','Orca','Seal','Heron','Crane','Stork','Condor','Osprey','Kestrel','Raven'];
 
+const SUBJECT_NAMES = ['Oak','Pine','Flower','Mushroom','Cactus','Bird','Fish','Cat','Dog','Bear','Rabbit','Fox','Frog','Turtle','Snail','Butterfly','Bee','Robot','Rocket','Car','House','Cloud','Mountain','Boat','Lighthouse','Windmill'];
 const P_HEAD = ['Zo','Mi','Ka','Vel','Tha','Bry','Nix','Ori','Sel','Dun','Fen','Gal','Ish','Jor','Kel','Lyr','Mar','Nal','Pex','Quil','Rho','Syl','Tor','Ul','Vey','Wren','Xan','Yel','Zar','Ash'];
 const P_MID = ['ra','lo','vi','tho','mi','sa','ne','du','ka','ri','zu','pha','bel','dor','fen','gal','mor','nis','pel','ryn'];
 const P_END = ['n','k','x','th','m','r','l','s','dra','gon','wyn','mir','tis','var','lin','net'];
 const PROPER = (() => {
   const rnd = seeded(90210), seen = new Set(), out = [];
-  while (out.length < 1001){
+  while (out.length < 4001){
     const nm = P_HEAD[Math.floor(rnd() * P_HEAD.length)] + P_MID[Math.floor(rnd() * P_MID.length)] + P_END[Math.floor(rnd() * P_END.length)];
     if (seen.has(nm)) continue;
     seen.add(nm); out.push(nm);
   }
   return out;
 })();
-function charName(c){ return PROPER[c % PROPER.length] + ' ' + SPECIES[c % SPECIES.length]; }
+function charName(c){ return PROPER[c % PROPER.length] + ' ' + SUBJECT_NAMES[c % SUBJECT_NAMES.length]; }
 
 const PACK_DESC = ['Dawn','Sunrise','Morning','Noon','Afternoon','Dusk','Sunset','Midnight','Coral','Tidal','Golden','Silver','Copper','Emerald','Sapphire','Ruby','Topaz','Onyx','Pearl','Ivory','Crimson','Azure','Teal','Amber','Violet','Indigo','Scarlet','Jade','Opal','Quartz','Marble','Granite','Bronze','Platinum','Neon','Retro','Turbo','Mega','Ultra','Hyper','Cosmic','Solar','Lunar','Stellar','Nebula','Aurora','Eclipse','Zenith','Nadir','Ridge','Valley','Bay','Cove','Reef','Shoal','Dune','Mesa','Canyon','Glacier','Fjord','Delta','Harbor','Lagoon','Marsh','Grove','Thicket','Meadow','Prairie','Tundra','Oasis','Summit','Crater','Basin','Plateau','Cliff','Bluff','Cape','Point','Strait','Channel','Current','Tide','Surge','Swell','Spray','Foam','Breeze','Gust','Gale','Storm','Thunder','Lightning','Rainbow','Halo','Prism','Glow','Spark','Flare','Ember','Frost','Mist'];
 
@@ -1663,44 +1677,74 @@ function hashStr(s){
   for (let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
   return h >>> 0;
 }
+
+/* ---------- realistic subject art (trees, animals, objects) ---------- */
+const SUBJECTS = [
+  { pal:[['#4f9b3f','#7cc45a','#6b4a2f'],['#3f8a52','#6fb36a','#5a3f28'],['#6aa84f','#93c47d','#7a5230']],
+    draw:p=>`<rect x="46" y="58" width="8" height="38" rx="3" fill="${p[2]}" stroke="${INK}" stroke-width="1.6"/><circle cx="50" cy="42" r="21" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><circle cx="33" cy="52" r="14" fill="${p[1]}" stroke="${INK}" stroke-width="1.6"/><circle cx="67" cy="52" r="14" fill="${p[1]}" stroke="${INK}" stroke-width="1.6"/><circle cx="50" cy="28" r="14" fill="${p[1]}" stroke="${INK}" stroke-width="1.6"/>` },
+  { pal:[['#2f6b46','#4f8a5f','#5a3f28'],['#3a7a4a','#5f9b63','#6b4a2f'],['#275c3d','#437a52','#4a3521']],
+    draw:p=>`<rect x="46" y="70" width="8" height="26" rx="3" fill="${p[2]}" stroke="${INK}" stroke-width="1.6"/><path d="M50 12 L72 46 H28Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M50 32 L76 66 H24Z" fill="${p[1]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M50 52 L78 82 H22Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>` },
+  { pal:[['#e0556f','#ffd166','#4f9b3f'],['#b07be0','#ffe08a','#3f8a52'],['#ff8a3d','#fff0b8','#4f9b3f']],
+    draw:p=>`<path d="M50 96 V56" stroke="${p[2]}" stroke-width="4" stroke-linecap="round"/><path d="M50 74 q-16 -4 -18 -18 q16 0 18 12" fill="${p[2]}" opacity=".85"/><circle cx="50" cy="42" r="9" fill="${p[1]}" stroke="${INK}" stroke-width="1.5"/><g fill="${p[0]}" stroke="${INK}" stroke-width="1.4"><ellipse cx="50" cy="26" rx="7" ry="10"/><ellipse cx="64" cy="38" rx="7" ry="10" transform="rotate(72 64 38)"/><ellipse cx="59" cy="55" rx="7" ry="10" transform="rotate(144 59 55)"/><ellipse cx="41" cy="55" rx="7" ry="10" transform="rotate(216 41 55)"/><ellipse cx="36" cy="38" rx="7" ry="10" transform="rotate(288 36 38)"/></g>` },
+  { pal:[['#c0392b','#f5e6c8','#8a5a3b'],['#8a5a3b','#e8d3b0','#6b4a2f'],['#d97706','#f7e7c6','#7a5230']],
+    draw:p=>`<rect x="44" y="56" width="12" height="40" rx="4" fill="${p[1]}" stroke="${INK}" stroke-width="1.6"/><path d="M20 58 q30 -32 60 0Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><circle cx="38" cy="46" r="3.4" fill="#fff8e7"/><circle cx="55" cy="40" r="3" fill="#fff8e7"/><circle cx="63" cy="50" r="2.6" fill="#fff8e7"/>` },
+  { pal:[['#4f9b3f','#7cc45a','#2f6b46'],['#5aa06a','#8fd0a0','#336b4a'],['#6aa84f','#a3d08a','#3f7a52']],
+    draw:p=>`<rect x="43" y="30" width="14" height="66" rx="7" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><path d="M43 56 q-18 0 -18 -18 v-12" fill="none" stroke="${p[0]}" stroke-width="12" stroke-linecap="round"/><path d="M57 48 q18 0 18 -18 v-8" fill="none" stroke="${p[1]}" stroke-width="11" stroke-linecap="round"/><g stroke="${p[2]}" stroke-width="1.4"><path d="M50 38 v6"/><path d="M50 52 v5"/><path d="M50 66 v5"/><path d="M30 42 v5"/><path d="M70 34 v5"/></g>` },
+  { pal:[['#4a90d9','#f2c49b','#c98f2b'],['#e0556f','#f7d9c4','#8a5a3b'],['#3fa89b','#f2e3c8','#d9a441']],
+    draw:p=>`<ellipse cx="52" cy="58" rx="24" ry="17" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><circle cx="66" cy="43" r="11" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><path d="M74 46 l8 4 l-8 4Z" fill="${p[2]}" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/><path d="M30 56 l-14 -8 v20Z" fill="${p[2]}" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/><circle cx="69" cy="40" r="1.8" fill="#1b2436"/><path d="M46 72 v10 M60 72 v10" stroke="${p[2]}" stroke-width="2.4" stroke-linecap="round"/>` },
+  { pal:[['#3f7fbf','#dff0ff','#f2c49b'],['#e08a3f','#ffe9c9','#f2c49b'],['#7a9b5a','#eaf5d8','#f2c49b']],
+    draw:p=>`<path d="M22 56 q10 -22 34 -22 q28 0 34 22 q-18 12 -34 12 q-20 0 -34 -12Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M56 46 v22" stroke="${INK}" stroke-width="1.4" opacity=".35"/><path d="M22 56 q-10 2 -6 12 q14 -2 18 -6" fill="${p[1]}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><circle cx="40" cy="52" r="2" fill="#1b2436"/><path d="M28 62 q10 6 22 4" stroke="${INK}" stroke-width="1.2" fill="none" opacity=".5"/>` },
+  { pal:[['#c98f5a','#f2e3c8','#8a5a3b'],['#7a7f8a','#e8eef5','#4a4f5a'],['#e0b08a','#fff6e8','#8a5a3b']],
+    draw:p=>`<ellipse cx="44" cy="70" rx="18" ry="16" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><circle cx="64" cy="46" r="14" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><path d="M54 36 l-4 -12 l12 6Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><path d="M74 36 l6 -11 l3 13Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><path d="M30 76 q-14 4 -8 -12" stroke="${p[0]}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="59" cy="44" r="1.8" fill="#1b2436"/><circle cx="69" cy="44" r="1.8" fill="#1b2436"/><path d="M62 50 q3 3 6 0" stroke="${INK}" stroke-width="1.4" fill="none"/>` },
+  { pal:[['#c98f5a','#f7ead6','#8a5a3b'],['#4a4a55','#e8e8f0','#2f2f38'],['#e0b08a','#fffaf0','#8a5a3b']],
+    draw:p=>`<ellipse cx="46" cy="68" rx="22" ry="18" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><circle cx="68" cy="48" r="13" fill="${p[1]}" stroke="${INK}" stroke-width="1.8"/><path d="M60 38 q-2 -10 6 -10 q8 2 4 12" fill="${p[0]}" stroke="${INK}" stroke-width="1.6"/><path d="M24 66 q-10 -6 -4 -16" stroke="${p[0]}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="65" cy="46" r="1.8" fill="#1b2436"/><circle cx="73" cy="46" r="1.8" fill="#1b2436"/><path d="M66 53 q3 3 6 0" stroke="${INK}" stroke-width="1.4" fill="none"/><ellipse cx="68" cy="54" rx="3" ry="2.4" fill="${p[2]}" opacity=".35"/>` },
+  { pal:[['#8a5a3b','#f0dfc8','#5a3a22'],['#4a4a55','#e6e6ee','#2f2f38'],['#a9713f','#f7e9d2','#6b4526']],
+    draw:p=>`<ellipse cx="50" cy="64" rx="24" ry="24" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><circle cx="34" cy="36" r="8" fill="${p[0]}" stroke="${INK}" stroke-width="1.6"/><circle cx="66" cy="36" r="8" fill="${p[0]}" stroke="${INK}" stroke-width="1.6"/><ellipse cx="50" cy="70" rx="11" ry="8" fill="${p[1]}" stroke="${INK}" stroke-width="1.4"/><circle cx="44" cy="58" r="1.9" fill="#1b2436"/><circle cx="56" cy="58" r="1.9" fill="#1b2436"/><ellipse cx="50" cy="67" rx="3" ry="2.2" fill="#1b2436"/>` },
+  { pal:[['#e8e2d6','#fdfbf5','#c98f9a'],['#f2e3c8','#fffdf7','#c98f5a'],['#d8d2c6','#ffffff','#a07a86']],
+    draw:p=>`<ellipse cx="48" cy="70" rx="20" ry="18" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><circle cx="62" cy="50" r="13" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><path d="M56 34 q0 -18 6 -18 q6 0 6 18" fill="${p[0]}" stroke="${INK}" stroke-width="1.6"/><path d="M64 34 q2 -16 8 -14 q4 4 0 16" fill="${p[1]}" stroke="${INK}" stroke-width="1.6"/><circle cx="59" cy="49" r="1.7" fill="#1b2436"/><circle cx="67" cy="49" r="1.7" fill="#1b2436"/><circle cx="66" cy="55" r="2" fill="${p[2]}"/>` },
+  { pal:[['#e07a3f','#ffe0c2','#8a5a3b'],['#c94f2f','#ffd8c0','#7a4526'],['#e8a04a','#fff0d8','#8a5a3b']],
+    draw:p=>`<ellipse cx="48" cy="66" rx="22" ry="18" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><path d="M62 52 l14 -6 l-4 12Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><path d="M58 30 l6 -12 l6 10Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><path d="M64 30 l4 -10 l5 9Z" fill="${p[1]}" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/><path d="M26 70 q-14 0 -8 -18 q4 -6 10 0" fill="${p[1]}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><circle cx="58" cy="44" r="1.8" fill="#1b2436"/><path d="M76 58 q4 2 2 6" stroke="${INK}" stroke-width="1.4" fill="none"/>` },
+  { pal:[['#6aa84f','#a3d08a','#3f7a52'],['#4f9b3f','#8fd0a0','#2f6b46'],['#7aa85a','#c0dfa0','#3f7a52']],
+    draw:p=>`<ellipse cx="50" cy="66" rx="24" ry="18" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><circle cx="36" cy="44" r="8" fill="${p[1]}" stroke="${INK}" stroke-width="1.6"/><circle cx="64" cy="44" r="8" fill="${p[1]}" stroke="${INK}" stroke-width="1.6"/><circle cx="36" cy="42" r="2.6" fill="#1b2436"/><circle cx="64" cy="42" r="2.6" fill="#1b2436"/><path d="M42 74 q8 6 16 0" stroke="${INK}" stroke-width="1.6" fill="none"/><path d="M28 82 l-6 10 M72 82 l6 10" stroke="${p[1]}" stroke-width="3" stroke-linecap="round"/>` },
+  { pal:[['#5a8f4a','#8fc47a','#3f5f35'],['#7a8f5a','#c0d0a0','#4a5f35'],['#4a7a5a','#8fc0a0','#2f5f45']],
+    draw:p=>`<path d="M26 72 q0 -26 24 -26 q24 0 24 26Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M34 72 q0 -18 16 -18 q16 0 16 18" fill="${p[1]}" opacity=".55"/><circle cx="76" cy="70" r="7" fill="${p[0]}" stroke="${INK}" stroke-width="1.6"/><circle cx="78" cy="68" r="1.4" fill="#1b2436"/><path d="M30 80 l-8 6 M70 80 l8 6 M46 80 l0 6" stroke="${p[0]}" stroke-width="4" stroke-linecap="round"/>` },
+  { pal:[['#d9a441','#e8c88a','#8a5a3b'],['#c98f5a','#e8d0a8','#7a4526'],['#b0a070','#ddd0b0','#6b5a3a']],
+    draw:p=>`<path d="M22 78 q4 -18 22 -18 q18 0 22 18Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><circle cx="52" cy="60" r="12" fill="${p[1]}" stroke="${INK}" stroke-width="1.6"/><circle cx="48" cy="58" r="1.6" fill="#1b2436"/><circle cx="56" cy="58" r="1.6" fill="#1b2436"/><path d="M50 64 q2 2 4 0" stroke="${INK}" stroke-width="1.2" fill="none"/><path d="M38 78 q6 -8 14 0" stroke="${INK}" stroke-width="1.2" fill="none" opacity=".4"/>` },
+  { pal:[['#e8a04a','#3f3a30','#f2d0a0'],['#d97a3f','#2f2a22','#f2d0a0'],['#c98f2b','#3f3a30','#ffe0b0']],
+    draw:p=>`<ellipse cx="54" cy="58" rx="10" ry="20" transform="rotate(18 54 58)" fill="${p[0]}" stroke="${INK}" stroke-width="1.6"/><ellipse cx="36" cy="46" rx="14" ry="10" transform="rotate(-22 36 46)" fill="${p[1]}" stroke="${INK}" stroke-width="1.4"/><ellipse cx="72" cy="46" rx="14" ry="10" transform="rotate(22 72 46)" fill="${p[2]}" stroke="${INK}" stroke-width="1.4"/><path d="M50 38 q-4 -10 4 -12" stroke="${INK}" stroke-width="1.4" fill="none"/><circle cx="54" cy="32" r="1.8" fill="#1b2436"/>` },
+  { pal:[['#f2c13f','#2f2a22','#d9a441'],['#e8a04a','#3f3a30','#c98f2b'],['#f2d06a','#2f2a22','#d9a441']],
+    draw:p=>`<ellipse cx="50" cy="64" rx="20" ry="16" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><path d="M36 56 h28 M34 64 h32 M38 72 h24" stroke="${p[1]}" stroke-width="3" opacity=".8"/><ellipse cx="38" cy="46" rx="12" ry="7" transform="rotate(-24 38 46)" fill="#dff0ff" opacity=".9" stroke="${INK}" stroke-width="1.2"/><ellipse cx="62" cy="46" rx="12" ry="7" transform="rotate(24 62 46)" fill="#dff0ff" opacity=".9" stroke="${INK}" stroke-width="1.2"/><circle cx="42" cy="60" r="1.6" fill="#1b2436"/>` },
+  { pal:[['#b8c4d6','#7f90a8','#5a6a80'],['#a8b8c8','#6f8098','#4a5a70'],['#c8d4e0','#8fa0b8','#5a6a80']],
+    draw:p=>`<rect x="36" y="46" width="28" height="26" rx="5" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><rect x="41" y="20" width="18" height="20" rx="4" fill="${p[1]}" stroke="${INK}" stroke-width="1.6"/><circle cx="46" cy="30" r="2.4" fill="#6ff0ff"/><circle cx="54" cy="30" r="2.4" fill="#6ff0ff"/><path d="M50 20 v-8" stroke="${INK}" stroke-width="2"/><circle cx="50" cy="10" r="3" fill="#ff5a5a"/><rect x="28" y="54" width="8" height="14" rx="3" fill="${p[2]}"/><rect x="64" y="54" width="8" height="14" rx="3" fill="${p[2]}"/><path d="M42 72 v8 M58 72 v8" stroke="${p[2]}" stroke-width="3"/>` },
+  { pal:[['#e8eef5','#d94a3f','#b8c4d6'],['#dff0ff','#3f7fbf','#a8b8c8'],['#fff3d6','#e07a3f','#c8b89a']],
+    draw:p=>`<path d="M50 12 q14 16 14 40 q0 22 -14 34 q-14 -12 -14 -34 q0 -24 14 -40Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><circle cx="50" cy="42" r="7" fill="#8fd4ff" stroke="${INK}" stroke-width="1.4"/><path d="M36 70 l-8 16 l12 -4Z" fill="${p[1]}" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/><path d="M64 70 l8 16 l-12 -4Z" fill="${p[1]}" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/><path d="M50 12 q4 8 4 14 h-8 q0 -6 4 -14Z" fill="${p[1]}" stroke="${INK}" stroke-width="1.2"/>` },
+  { pal:[['#3f8fbf','#b8e0ff','#2f2f38'],['#c94f2f','#ffd0b0','#2f2f38'],['#4f9b3f','#c0e8a0','#2f2f38']],
+    draw:p=>`<path d="M18 66 q4 -10 14 -10 h30 q10 0 14 10 l4 10 q0 4 -6 4 h-50 q-6 0 -6 -4Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M30 56 l6 -12 h24 l6 12Z" fill="${p[1]}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><circle cx="32" cy="80" r="7" fill="${p[2]}" stroke="${INK}" stroke-width="1.6"/><circle cx="68" cy="80" r="7" fill="${p[2]}" stroke="${INK}" stroke-width="1.6"/><rect x="40" y="44" width="10" height="6" rx="2" fill="#dff0ff" opacity=".8"/>` },
+  { pal:[['#e8e2d6','#c96f5a','#8a6a4a'],['#f2e3c8','#7a9b5a','#8a6a4a'],['#e0d0b8','#4a6a8a','#7a5a3a']],
+    draw:p=>`<path d="M24 52 l26 -22 l26 22Z" fill="${p[1]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><rect x="30" y="52" width="40" height="34" fill="${p[0]}" stroke="${INK}" stroke-width="1.8"/><rect x="44" y="64" width="12" height="22" fill="${p[2]}" stroke="${INK}" stroke-width="1.4"/><rect x="34" y="58" width="8" height="8" fill="#8fd4ff" stroke="${INK}" stroke-width="1.2"/><rect x="58" y="58" width="8" height="8" fill="#8fd4ff" stroke="${INK}" stroke-width="1.2"/>` },
+  { pal:[['#dff0ff','#f2c13f','#9fb8d0'],['#e8f4ff','#ffb347','#a8c0d8'],['#f2f8ff','#ffe08a','#a8b8c8']],
+    draw:p=>`<circle cx="62" cy="34" r="14" fill="${p[1]}" stroke="${INK}" stroke-width="1.6"/><path d="M24 66 q0 -14 14 -14 q4 -12 18 -10 q12 2 12 14 q10 0 10 10Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M32 78 v8 M46 78 v8 M60 78 v6" stroke="#6fb3e0" stroke-width="3" stroke-linecap="round"/>` },
+  { pal:[['#8a93a6','#f2f8ff','#5a6a80'],['#7a8fa6','#e8f4ff','#4a5a70'],['#9aa3b6','#ffffff','#5a6a80']],
+    draw:p=>`<path d="M16 84 L44 30 L60 58 L70 42 L88 84Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M44 30 L52 44 L36 44Z" fill="${p[1]}" stroke="${INK}" stroke-width="1.2" stroke-linejoin="round"/><path d="M70 42 L74 50 L66 50Z" fill="${p[1]}" stroke="${INK}" stroke-width="1.2" stroke-linejoin="round"/>` },
+  { pal:[['#f2e3c8','#d94a3f','#8a6a4a'],['#e8f0f8','#3f7fbf','#7a6a5a'],['#fff0d0','#4f9b3f','#8a6a4a']],
+    draw:p=>`<path d="M28 74 h44 l-8 14 h-28Z" fill="${p[2]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M50 20 v52" stroke="${INK}" stroke-width="2"/><path d="M50 22 l26 34 h-26Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M50 30 l-18 26 h18Z" fill="${p[1]}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><path d="M24 88 q26 6 52 0" stroke="#6fb3e0" stroke-width="3" fill="none" opacity=".7"/>` },
+  { pal:[['#f2f8ff','#d94a3f','#8a93a6'],['#eef6ff','#c94f2f','#7a8fa6'],['#ffffff','#e07a3f','#8a93a6']],
+    draw:p=>`<path d="M38 88 L44 30 h12 l6 58Z" fill="#f7f3ea" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M44 34 h12" stroke="${p[1]}" stroke-width="6"/><path d="M41 52 h18" stroke="${p[1]}" stroke-width="5"/><rect x="44" y="16" width="12" height="12" rx="2" fill="${p[0]}" stroke="${INK}" stroke-width="1.4"/><path d="M56 20 l14 -6 M56 24 l14 6" stroke="${p[1]}" stroke-width="2" opacity=".7"/><path d="M28 88 h44" stroke="${INK}" stroke-width="2"/>` },
+  { pal:[['#f2e3c8','#8a6a4a','#c94f2f'],['#e8e2d6','#7a5a3a','#3f7fbf'],['#fff0d0','#8a6a4a','#4f9b3f']],
+    draw:p=>`<path d="M42 88 L48 26 h4 l6 62Z" fill="${p[0]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><circle cx="50" cy="26" r="4" fill="${p[2]}"/><circle cx="50" cy="26" r="18" fill="none"/><g stroke="${p[1]}" stroke-width="4" stroke-linecap="round"><path d="M50 26 L50 6"/><path d="M50 26 L68 36"/><path d="M50 26 L32 36"/><path d="M50 26 L50 46"/></g><path d="M32 88 h36" stroke="${INK}" stroke-width="2"/>` }
+];
+
 function critter(a){
-  const g = a.tone || '#6fbf4a';
-  const dk = shade(g, -34), lt = shade(g, 42);
-  const h = hashStr((a.n || 'critter') + '|' + (a.seed === undefined ? '' : a.seed));
-  const v = a.v || [h % 6, (h >>> 3) % 5, (h >>> 6) % 3, (h >>> 9) % 5, (h >>> 12) % 4];
-  const body = v[0], top = v[1], arm = v[2], acc = v[3], eye = v[4];
-  const shapes = {
-    0: {p:`<ellipse cx="50" cy="68" rx="27" ry="25"/>`, topY:44, eyeY:62, edge:24},
-    1: {p:`<ellipse cx="50" cy="64" rx="23" ry="28"/>`, topY:37, eyeY:58, edge:20},
-    2: {p:`<rect x="37" y="36" width="26" height="61" rx="13"/>`, topY:36, eyeY:56, edge:12},
-    3: {p:`<circle cx="50" cy="61" r="25"/><rect x="40" y="85" width="7" height="12" rx="3.5"/><rect x="53" y="85" width="7" height="12" rx="3.5"/>`, topY:37, eyeY:57, edge:22},
-    4: {p:`<rect x="29" y="42" width="42" height="54" rx="8"/>`, topY:42, eyeY:62, edge:21},
-    5: {p:`<path d="M27 96 V62 a23 23 0 0 1 46 0 v34 q-7 6 -12 0 q-6 6 -12 0 q-6 6 -10 0Z"/>`, topY:39, eyeY:58, edge:20}
-  }[body];
-  let out = `<g fill="${g}" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round">${shapes.p}</g>`;
-  if (acc === 0) out += `<circle cx="38" cy="78" r="4" fill="${lt}"/><circle cx="58" cy="85" r="3.2" fill="${lt}"/><circle cx="61" cy="74" r="2.6" fill="${lt}"/>`;
-  else if (acc === 1) out += `<path d="M33 78 q8 5 16 0 M51 86 q8 5 16 0" stroke="${dk}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
-  else if (acc === 2) out += `<ellipse cx="50" cy="79" rx="12" ry="10" fill="${lt}" opacity=".8"/>`;
-  else if (acc === 3) out += `<circle cx="50" cy="79" r="7" fill="none" stroke="${dk}" stroke-width="2.6"/><circle cx="50" cy="79" r="2.4" fill="${dk}"/>`;
-  if (arm === 0) out += `<ellipse cx="${50 - shapes.edge - 3}" cy="70" rx="6" ry="9" fill="${g}" stroke="${INK}" stroke-width="2"/><ellipse cx="${50 + shapes.edge + 3}" cy="70" rx="6" ry="9" fill="${g}" stroke="${INK}" stroke-width="2"/>`;
-  else if (arm === 1) out += `<path d="M${50 - shapes.edge + 4} 63 q-13 -8 -16 4 q10 5 16 1Z" fill="${lt}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M${50 + shapes.edge - 4} 63 q13 -8 16 4 q-10 5 -16 1Z" fill="${lt}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>`;
-  const ty = shapes.topY;
-  if (top === 1) out += `<path d="M50 ${ty + 3} V${ty - 9}" stroke="${INK}" stroke-width="2"/><circle cx="50" cy="${ty - 12}" r="4.5" fill="#ffd166" stroke="${INK}" stroke-width="1.6"/>`;
-  else if (top === 2) out += `<path d="M42 ${ty + 6} L34 ${ty - 9} M58 ${ty + 6} L66 ${ty - 9}" stroke="${INK}" stroke-width="4.6" stroke-linecap="round"/><path d="M42 ${ty + 6} L34 ${ty - 9} M58 ${ty + 6} L66 ${ty - 9}" stroke="${lt}" stroke-width="2.2" stroke-linecap="round"/>`;
-  else if (top === 3) out += `<path d="M50 ${ty + 4} V${ty - 8}" stroke="${INK}" stroke-width="2.2"/><path d="M50 ${ty - 4} q-10 -2 -12 -10 q10 -1 12 6Z" fill="${lt}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><path d="M50 ${ty - 4} q10 -2 12 -10 q-10 -1 -12 6Z" fill="${lt}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>`;
-  else if (top === 4) out += `<ellipse cx="34" cy="${ty + 2}" rx="7" ry="10" fill="${g}" stroke="${INK}" stroke-width="2"/><ellipse cx="66" cy="${ty + 2}" rx="7" ry="10" fill="${g}" stroke="${INK}" stroke-width="2"/><ellipse cx="34" cy="${ty + 3}" rx="3" ry="5" fill="${lt}"/><ellipse cx="66" cy="${ty + 3}" rx="3" ry="5" fill="${lt}"/>`;
-  else if (top === 5) out += `<path d="M38 ${ty + 4} l-3 -12 l8 5 l4 -10 l4 10 l8 -5 l-3 12Z" fill="#ffd166" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>`;
-  const ey = shapes.eyeY;
-  if (eye === 0) out += `<circle cx="43" cy="${ey}" r="4.4" fill="#fff" stroke="${INK}" stroke-width="1.4"/><circle cx="57" cy="${ey}" r="4.4" fill="#fff" stroke="${INK}" stroke-width="1.4"/><circle cx="44" cy="${ey + 1}" r="2" fill="#182033"/><circle cx="58" cy="${ey + 1}" r="2" fill="#182033"/>`;
-  else if (eye === 1) out += `<path d="M36 ${ey} H64" stroke="#2b3a52" stroke-width="3"/><circle cx="43" cy="${ey}" r="5.4" fill="#dff6ff" stroke="#243249" stroke-width="1.8"/><circle cx="57" cy="${ey}" r="5.4" fill="#dff6ff" stroke="#243249" stroke-width="1.8"/><circle cx="44" cy="${ey + 1}" r="2.2" fill="#182033"/><circle cx="58" cy="${ey + 1}" r="2.2" fill="#182033"/>`;
-  else if (eye === 2) out += `<circle cx="50" cy="${ey}" r="8" fill="#fff" stroke="${INK}" stroke-width="1.6"/><circle cx="50" cy="${ey + 1}" r="3.6" fill="#182033"/><circle cx="52" cy="${ey - 1}" r="1.2" fill="#fff"/>`;
-  else out += `<circle cx="41" cy="${ey + 2}" r="3.4" fill="#fff" stroke="${INK}" stroke-width="1.2"/><circle cx="50" cy="${ey - 4}" r="3.6" fill="#fff" stroke="${INK}" stroke-width="1.2"/><circle cx="59" cy="${ey + 2}" r="3.4" fill="#fff" stroke="${INK}" stroke-width="1.2"/><circle cx="41" cy="${ey + 2}" r="1.6" fill="#182033"/><circle cx="50" cy="${ey - 4}" r="1.7" fill="#182033"/><circle cx="59" cy="${ey + 2}" r="1.6" fill="#182033"/>`;
-  out += `<path d="M45 ${ey + 11} q5 5 10 0" stroke="${INK}" stroke-width="2" fill="none" stroke-linecap="round"/>`;
-  const flip = v[5] ? -1 : 1;
-  const zoom = [1, 1.06, 0.94][v[6] || 0] || 1;
-  if (flip < 0 || zoom !== 1) out = `<g transform="translate(50,97) scale(${flip * zoom},${zoom}) translate(-50,-97)">${out}</g>`;
+  const i = Math.max(0, a.seed || 0);
+  const sub = SUBJECTS[i % SUBJECTS.length];
+  const pal = sub.pal[Math.floor(i / SUBJECTS.length) % sub.pal.length];
+  const zoom = [1, 0.94, 1.05][Math.floor(i / (SUBJECTS.length * 3)) % 3];
+  const flip = Math.floor(i / (SUBJECTS.length * 9)) % 2 ? -1 : 1;
+  let out = sub.draw(pal);
+  if (flip < 0 || zoom !== 1) out = `<g transform="translate(50,98) scale(${flip * zoom},${zoom}) translate(-50,-98)">${out}</g>`;
   return out;
 }
+
 function avatarSVG(a){
   let inner = '';
   if (a.k === 'platypus') inner = platypus(a, false);
@@ -1739,7 +1783,7 @@ const DEF = {
   lastSeen:0, seenVersion:'', skips:5, rivalScale:0, skipGift5:0,
   playerName:'You', rivals:null, asked:{}, gStreak:0,
   level:'Easy', category:'Characters', triviaMode:'level', q:null, answer:null, run:null, message:'', msgKind:'',
-  chapter:0, pack:0, packPage:0, cardChapter:'all', page:'packs', labSearch:'', search:'', cfilter:'all', rfilter:'all', sort:'new', limit:24
+  chapter:0, group:0, pack:0, packPage:0, cardChapter:'all', page:'packs', labSearch:'', search:'', cfilter:'all', rfilter:'all', sort:'new', limit:24
 };
 let s = JSON.parse(JSON.stringify(DEF));
 try {
@@ -1766,6 +1810,7 @@ if (!Number.isFinite(s.gStreak) || s.gStreak < 0) s.gStreak = 0;
 if (!Number.isInteger(s.pack) || s.pack < 0 || s.pack >= PACKS.length) s.pack = 0;
 s.chapter = PACKS[s.pack].chapter;
 if (!Number.isInteger(s.chapter) || s.chapter < 0 || s.chapter >= CHAPTERS.length) s.chapter = 0;
+if (!Number.isInteger(s.group) || s.group < 0 || s.group >= CHAPTER_BASE.length) s.group = Math.floor(s.chapter / 10);
 if (typeof s.cardChapter !== 'string') s.cardChapter = 'all';
 if (!s.triviaMode) s.triviaMode = 'level';
 if (typeof s.playerName !== 'string' || !s.playerName.trim()) s.playerName = 'You';
@@ -1836,7 +1881,7 @@ function save(){
       lifetime:s.lifetime, unclaimed:s.unclaimed, upgrades:s.upgrades, notice:s.notice, lastSeen:Date.now(), seenVersion:s.seenVersion, skips:s.skips, rivalScale:s.rivalScale, skipGift5:s.skipGift5,
       sound:s.sound, fast:s.fast, smart:s.smart, lang:s.lang, playerName:s.playerName, rivals:s.rivals,
       asked:s.asked, gStreak:s.gStreak, level:s.level, category:s.category, triviaMode:s.triviaMode,
-      chapter:s.chapter, pack:s.pack, packPage:s.packPage, cardChapter:s.cardChapter, sort:s.sort, limit:s.limit
+      chapter:s.chapter, group:s.group, pack:s.pack, packPage:s.packPage, cardChapter:s.cardChapter, sort:s.sort, limit:s.limit
     }));
   } catch(e){}
 }
@@ -2169,7 +2214,9 @@ function renderPacks(){
   const owned = ownedByChapter[s.chapter];
   const chTotal = packs.length * 10;
   el.innerHTML = `
-  <div class="chapters">${CHAPTERS.map((c, i) => {
+  <div class="groups">${CHAPTER_BASE.map((b, g) => `<button class="group ${g === s.group ? 'on' : ''}" data-group="${g}"><span>${b.icon}</span>${chapterName(b.name)}</button>`).join('')}</div>
+  <div class="chapters">${Array.from({length: 10}, (_, k) => s.group * 10 + k).map(i => {
+    const c = CHAPTERS[i];
     const o = ownedByChapter[i];
     const total = PACKS_PER_CHAPTER * 10;
     const pct = Math.min(100, o / total * 100).toFixed(1);
@@ -2209,9 +2256,20 @@ function renderPacks(){
     <h3>How this works</h3>
     <p class="hint" style="font-size:11.5px">10,000 packs · 100,000 cards. Every pack holds ten brand-new characters. Packs costing <b>1 quadrillion (Qa) or less</b> give <b>5 cards</b> per open; anything above that gives <b>1 card</b>. The final pack costs <b>1 sextillion</b>. Only your five equipped cards earn coins.</p>
   </div>`;
+  el.querySelectorAll('[data-group]').forEach(b => {
+    b.onclick = () => {
+      s.group = +b.dataset.group;
+      s.chapter = s.group * 10;
+      s.packPage = 0;
+      const first = PACKS.find(p => p.chapter === s.chapter);
+      if (first) s.pack = first.i;
+      save(); render(); window.scrollTo({top:0, behavior:'smooth'});
+    };
+  });
   el.querySelectorAll('[data-ch]').forEach(b => {
     b.onclick = () => {
       s.chapter = +b.dataset.ch;
+      s.group = Math.floor(s.chapter / 10);
       s.packPage = 0;
       const first = PACKS.find(p => p.chapter === s.chapter);
       if (first) s.pack = first.i;
