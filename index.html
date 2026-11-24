@@ -471,6 +471,8 @@ body.opening .stats{margin:7px 0 3px}
   line-height:1.35;letter-spacing:.01em;backdrop-filter:blur(4px)}
 #credit a{color:#9df5e0;text-decoration:underline;text-underline-offset:2px;pointer-events:auto}
 @media (max-width:520px){#credit{font-size:7.5px;max-width:88vw}}
+#coins.spend{animation:coinSpend .55s ease}
+@keyframes coinSpend{0%{color:#ff8a8a;transform:scale(1.06)}100%{color:inherit;transform:scale(1)}}
 .foot .linkish{background:none;border:0;padding:0;font-size:9px;color:#8194b8;text-decoration:underline;text-underline-offset:2px}
 
 /* what's new — gold + seafoam */
@@ -601,7 +603,7 @@ const MAX_EQ = 5;
 const KEY = 'pf_summer_collector_v2';
 /* release version + what this build adds (bump both on every update)
    every release uses a three-part number: major.feature.patch */
-const VERSION = '4.3.2';
+const VERSION = '4.3.3';
 /* ADMIN ABUSE event: ended in 4.1.1 — production is back to 1x */
 const CARD_RATE_CAP = 5e18; // 5 quintillion coins/sec per card
 const BOOST_MULT = 3;
@@ -637,11 +639,12 @@ const RELEASES = [
   ['4.3.0', 'Realistic art: trees, animals and objects; names now match the picture'],
   ['4.3.1', 'Updated Trillion Club chapter blurb for the sextillion finish'],
   ['4.3.2', 'Bug fixes'],
+  ['4.3.3', 'Additional fixes'],
 ];
 const WHATS_NEW = [
-  '<b>Bug fixes</b> and general stability improvements',
-  'The credit line is now a working link to the original idea\'s site',
-  'No gameplay changes beyond the fixes'
+  'More <b>bug fixes</b> and balance-safety improvements',
+  'Pack purchases now show the amount spent and your new balance',
+  'No other gameplay changes'
 ];
 const INK = '#121a2c';
 
@@ -781,7 +784,13 @@ function fmtCost(n){
 }
 const $ = sel => document.querySelector(sel);
 /* exact coin maths: balances exceed Number precision past 9e15 */
-const toBI = v => (typeof v === 'bigint' ? v : BigInt(Math.max(0, Math.floor(Number(v) || 0))));
+const toBI = v => {
+  if (typeof v === 'bigint') return v;
+  if (typeof v === 'string' && /^\d+$/.test(v.trim())) return BigInt(v.trim());
+  const n = Number(v);
+  if (!Number.isFinite(n) || n <= 0) return 0n;
+  return BigInt(Math.floor(n));
+};
 const costBI = n => BigInt(Math.max(0, Math.round(Number(n) || 0)));
 const el = document.getElementById('screen');
 
@@ -1948,11 +1957,15 @@ function smartEquip(cards){
     if (weak && eff(c) > weakRate) s.equipped[s.equipped.indexOf(weak)] = c.id;
   }
 }
+let lastPurchase = null;
+function flashCoins(){ const n = document.getElementById('coins'); if (!n) return; n.classList.remove('spend'); void n.offsetWidth; n.classList.add('spend'); }
 function buyPack(again){
   const p = PACKS[s.pack];
   const price = costBI(p.cost);
   if (s.coins < price){ toast(`Need ${fmtCost(price - s.coins)} more coins`, 'bad'); sfx('error'); return; }
   s.coins -= price;
+  lastPurchase = {cost:price, balance:s.coins};
+  flashCoins();
   s.packsOpened++;
   const pulled = Array.from({length:p.pull}, () => drawCard(p));
   s.cards.push(...pulled);
@@ -2708,6 +2721,8 @@ function openSummary(cards, p, again){
   const can = s.coins >= costBI(p.cost);
   openModal(`<button class="x" data-close>✕</button><h3>${p.icon} ${packName(p)}</h3>
     <p class="sub">${cards.length} card${cards.length === 1 ? '' : 's'} added${s.smart ? ' · smart equip checked your slots' : ''}.</p>
+    ${lastPurchase ? `<div class="mut-preview"><span>Spent</span><b class="gold">− 🪙 ${fmtCost(lastPurchase.cost)}</b></div>
+    <div class="mut-preview"><span>Balance</span><b>🪙 ${fmt(lastPurchase.balance)}</b></div>` : ''}
     <div class="sum-grid">${cards.map(c => `<div>${cardHTML(c, {})}</div>`).join('')}</div>
     <button class="btn primary wide" id="againBtn" ${can ? '' : 'disabled'}>Open again — ${fmtCost(p.cost)}</button>
     <button class="btn ghost wide" data-close style="margin-top:5px">Done</button>
