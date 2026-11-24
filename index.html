@@ -588,8 +588,9 @@ const MAX_EQ = 5;
 const KEY = 'pf_summer_collector_v2';
 /* release version + what this build adds (bump both on every update)
    every release uses a three-part number: major.feature.patch */
-const VERSION = '4.1.1';
+const VERSION = '4.1.2';
 /* ADMIN ABUSE event: ended in 4.1.1 — production is back to 1x */
+const CARD_RATE_CAP = 1e13; // 10T coins/sec per card
 const BOOST_MULT = 3;
 const BOOST_START = 1795470996069;
 const BOOST_END = 0;
@@ -617,10 +618,12 @@ const RELEASES = [
   ['4.0.1', 'All 10,000 packs renamed'],
   ['4.1.0', 'Admin abuse: 3x production for 30 min + 5 lab skips'],
   ['4.1.1', 'Admin abuse ended — production back to 1x'],
+  ['4.1.2', 'Card income capped at 10T/sec; top pack confirmed at 1Qi'],
 ];
 const WHATS_NEW = [
-  '<b>ADMIN ABUSE</b> is over — production back to <b>1×</b>',
-  'Lab skips stay yours'
+  'No card can earn more than <b>10T coins/sec</b> — the cap applies to base rate, multipliers and upgrades',
+  'The final pack costs <b>1Qi</b> (1,000,000,000,000,000,000) — the true top price',
+  'Pack rate ranges now show the capped values'
 ];
 const INK = '#121a2c';
 
@@ -1054,9 +1057,9 @@ CHAPTERS.forEach((ch, ci) => {
       CARDS.push({i:cardIndex, b:bIndex, e:'classic', p:i, n:nm});
       pack.pool.push(cardIndex);
     }
-    pack.band = pull === 1
+    pack.band = (pull === 1
       ? [baseRate * TMULT[3] * 0.92, baseRate * TMULT[4] * 1.08]
-      : [baseRate * TMULT[0] * 0.92, baseRate * TMULT[4] * 1.08];
+      : [baseRate * TMULT[0] * 0.92, baseRate * TMULT[4] * 1.08]).map(v => Math.min(CARD_RATE_CAP, v));
     PACKS.push(pack);
   }
 });
@@ -1762,6 +1765,7 @@ s.cards = s.cards.filter(c => c && Number.isInteger(c.i) && c.i >= 0 && c.i < CA
   used.add(c.id);
   c.t = Number.isInteger(c.t) ? Math.max(0, Math.min(4, c.t)) : 0;
   if (!Number.isFinite(c.c) || c.c < 0) c.c = PACKS[CARDS[c.i].p].baseRate;
+  if (c.c > CARD_RATE_CAP) c.c = CARD_RATE_CAP;
   if (![1,2,5].includes(c.m)) c.m = 1;
   return c;
 });
@@ -1773,7 +1777,7 @@ s.upgrade = null;
 s.upgrades = s.upgrades.filter(u => u && typeof u.cardId === 'string' && Number.isFinite(u.endsAt) && !!byId(u.cardId));
 const upgradingIds = () => new Set(s.upgrades.map(u => u.cardId));
 s.equipped = [...new Set(s.equipped)].filter(id => !!byId(id)).slice(0, MAX_EQ);
-const eff = c => (Number(c.c) || 0) * (Number(c.m) || 1) * boostMult();
+const eff = c => Math.min(CARD_RATE_CAP, (Number(c.c) || 0) * (Number(c.m) || 1) * boostMult());
 const defOf = c => CARDS[c.i];
 const packOf = c => PACKS[CARDS[c.i].p];
 const incomePerSecond = () => s.equipped.reduce((sum, id) => { const c = byId(id); return sum + (c ? eff(c) : 0); }, 0);
@@ -1864,7 +1868,7 @@ function drawCard(p){
   const ci = p.pool[Math.floor(Math.random() * p.pool.length)];
   const tier = p.pull === 1 ? (Math.random() < 0.5 ? 3 : 4) : rollTier();
   const base = BASES[CARDS[ci].b];
-  const rate = p.baseRate * (base.rateMul || 1) * TMULT[tier] * (0.92 + Math.random() * 0.16);
+  const rate = Math.min(CARD_RATE_CAP, p.baseRate * (base.rateMul || 1) * TMULT[tier] * (0.92 + Math.random() * 0.16));
   return {id:rid(), i:ci, t:tier, c:+rate.toPrecision(8), m:1, f:tier === 4 || p.pull === 1};
 }
 function smartEquip(cards){
@@ -2540,7 +2544,7 @@ function openUpgrade(id){
   openModal(`<button class="x" data-close>✕</button><h3>Upgrade ${esc(defOf(c).n)}?</h3>
     <p class="sub">The Upgrade-inator replaces the current multiplier.</p>
     <div class="mut-preview"><span>Current</span><b>🪙 ${fmt(eff(c))}/s (${c.m || 1}×)</b></div>
-    <div class="mut-preview"><span>Possible</span><b>${fmt(c.c)} / ${fmt(c.c * 2)} / ${fmt(c.c * 5)}</b></div>
+    <div class="mut-preview"><span>Possible</span><b>${fmt(c.c)} / ${fmt(Math.min(CARD_RATE_CAP, c.c * 2))} / ${fmt(Math.min(CARD_RATE_CAP, c.c * 5))}</b></div>
     <div class="mut-preview"><span>Odds</span><b>1× 55% · 2× 35% · 5× 10%</b></div>
     <div class="mut-preview"><span>Wait</span><b>${durationText(upgradeMinutes(c))}</b></div>
     <div class="mut-preview"><span>Cost</span><b class="gold">🪙 ${fmtCost(cost)}</b></div>
