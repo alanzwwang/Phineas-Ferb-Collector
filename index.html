@@ -600,7 +600,7 @@ const MAX_EQ = 5;
 const KEY = 'pf_summer_collector_v2';
 /* release version + what this build adds (bump both on every update)
    every release uses a three-part number: major.feature.patch */
-const VERSION = '4.3.0';
+const VERSION = '4.3.1';
 /* ADMIN ABUSE event: ended in 4.1.1 — production is back to 1x */
 const CARD_RATE_CAP = 5e18; // 5 quintillion coins/sec per card
 const BOOST_MULT = 3;
@@ -634,12 +634,12 @@ const RELEASES = [
   ['4.1.3', 'First/last page buttons + a jump to the 1Qi final pack'],
   ['4.2.0', '100 chapters · 1 sextillion final pack · 5 quintillion/sec card cap'],
   ['4.3.0', 'Realistic art: trees, animals and objects; names now match the picture'],
+  ['4.3.1', 'Updated Trillion Club chapter blurb for the sextillion finish'],
 ];
 const WHATS_NEW = [
-  'New <b>realistic art</b> — oaks, pines, flowers, mushrooms, cacti, birds, fish, cats, dogs and more',
-  'Character names now <b>match the picture</b> (e.g. "Sylimix Cat", "Xandur Flower")',
-  'Credit to the original idea added in the bottom-left corner',
-  'Everything else unchanged: 100 chapters, 100,000 cards, 1Sx final pack, 5Qi/sec cap'
+  'Trillion Club chapters now describe the <b>sextillion finish</b> instead of the old trillion text',
+  'Final pack: <b>1.00Sx</b>, sells for 100.00Qi, upgrade costs 2.00Sx',
+  'Card ceiling still <b>5.00Qi/sec</b>'
 ];
 const INK = '#121a2c';
 
@@ -916,7 +916,7 @@ const CHAPTER_BASE = [
     ['Giant Floating Baby Head','Floating','👶','classic'],['Meap’s Return','Return','👽','alien'],['The Beak Begins','Begins','🦸','superhero'],['Urban Legends','Urban Legend','🗣️','shadow'],['Cryptid Campout','Cryptid','🐾','camp'],
     ['Mythic Danville','Mythic','🐉','legend'],['Hero Hour','Hero','🦸','superhero'],['Super Squad','Super Squad','💥','superhero'],['Legendary Lair','Legendary','🏔️','classic'],['Folklore Finale','Folklore','📜','classic']
   ]},
-  {name:'Trillion Club', icon:'💎', color:'#ffd166', blurb:'The last ten packs. The one-trillion-coin finish.', pool:[0,1,2,5,6,22,23,29,30,31,37,38,40,41,42,43,53,63], themes:[
+  {name:'Trillion Club', icon:'💎', color:'#ffd166', blurb:'The final hundred packs, ending with the Sextillion Pack.', pool:[0,1,2,5,6,22,23,29,30,31,37,38,40,41,42,43,53,63], themes:[
     ['Gold Rush','Gold','🥇','gold'],['Platinum Picks','Platinum','🥈','gold'],['Diamond Edition','Diamond','💎','gold'],['Cosmic Foil','Cosmic','🌌','gold'],['Mythic Gold','Mythic Gold','🏆','gold'],
     ['Royal Flush','Royal','👑','gold'],['Crown Jewels','Crown','💎','gold'],['Ultimate Grails','Grails','🏆','gold'],['Trillion Tier','Trillion','💰','gold'],['The One Trillion Pack','1T','🌟','gold']
   ]}
