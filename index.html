@@ -603,7 +603,7 @@ const MAX_EQ = 5;
 const KEY = 'pf_summer_collector_v2';
 /* release version + what this build adds (bump both on every update)
    every release uses a three-part number: major.feature.patch */
-const VERSION = '4.3.3';
+const VERSION = '4.3.4';
 /* ADMIN ABUSE event: ended in 4.1.1 — production is back to 1x */
 const CARD_RATE_CAP = 5e18; // 5 quintillion coins/sec per card
 const BOOST_MULT = 3;
@@ -640,11 +640,12 @@ const RELEASES = [
   ['4.3.1', 'Updated Trillion Club chapter blurb for the sextillion finish'],
   ['4.3.2', 'Bug fixes'],
   ['4.3.3', 'Additional fixes'],
+  ['4.3.4', 'Balance update feedback'],
 ];
 const WHATS_NEW = [
-  'More <b>bug fixes</b> and balance-safety improvements',
-  'Pack purchases now show the amount spent and your new balance',
-  'No other gameplay changes'
+  '<b>Bug fixes</b> — pack purchases now always deduct from your balance and stay deducted after reloads',
+  'Every purchase shows a <b>− coins spent</b> confirmation and the new balance in the summary',
+  'Hover the balance to see the exact full amount'
 ];
 const INK = '#121a2c';
 
@@ -1966,6 +1967,7 @@ function buyPack(again){
   s.coins -= price;
   lastPurchase = {cost:price, balance:s.coins};
   flashCoins();
+  toast('− 🪙 ' + fmtCost(price) + ' spent', 'bad');
   s.packsOpened++;
   const pulled = Array.from({length:p.pull}, () => drawCard(p));
   s.cards.push(...pulled);
@@ -2110,6 +2112,8 @@ function countdownText(ms){
 function updateHUD(){
   const set = (id, v) => { const n = document.getElementById(id); if (n) n.textContent = v; };
   set('coins', fmt(s.coins));
+  const coinEl = document.getElementById('coins');
+  if (coinEl) coinEl.title = s.coins.toLocaleString();
   set('cardCount', s.cards.length.toLocaleString());
   set('opened', s.packsOpened.toLocaleString());
   set('eqCount', s.equipped.length + '/5');
