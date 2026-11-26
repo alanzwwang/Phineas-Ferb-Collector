@@ -145,6 +145,18 @@ p{margin:0 0 8px}
 .group span{font-size:13px}
 .group.on{background:rgba(255,138,61,.16);border-color:rgba(255,138,61,.55);color:#ffd9b0}
 .chapters{display:flex;gap:7px;overflow-x:auto;padding:1px 0 8px;scrollbar-width:thin}
+.bulk{margin-top:9px;padding:9px 10px;border-radius:11px;border:1px dashed rgba(84,232,206,.32);
+  background:rgba(84,232,206,.05)}
+.bulk-top{display:flex;justify-content:space-between;align-items:center;font-size:9.5px;font-weight:900;
+  letter-spacing:.1em;text-transform:uppercase;color:#9df5e0;margin-bottom:6px}
+.bulk-row{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.bulk-row input{width:82px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);
+  border-radius:8px;color:#fff;font-size:13px;font-weight:900;padding:6px 8px;outline:none}
+.bulk-row input:focus{border-color:rgba(84,232,206,.6)}
+.bulk-x{color:#7f93b5;font-size:11px}
+.bulk-unit{font-size:9.5px;color:#a9bcd8}
+.bulk-row b{margin-left:auto;font-size:12px}
+#bulkBtn{font-size:10.5px}
 .pager{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 9px;
   font-size:10.5px;color:#a9bcd8;letter-spacing:.02em}
 .pager .pg{border:1px solid rgba(120,180,220,.3);background:rgba(255,255,255,.05);color:#d7e6ff;
@@ -609,7 +621,7 @@ const MAX_EQ = 5;
 const KEY = 'pf_summer_collector_v2';
 /* release version + what this build adds (bump both on every update)
    every release uses a three-part number: major.feature.patch */
-const VERSION = '4.3.5';
+const VERSION = '4.4.0';
 /* ADMIN ABUSE event: ended in 4.1.1 — production is back to 1x */
 const CARD_RATE_CAP = 5e18; // 5 quintillion coins/sec per card
 const BOOST_MULT = 3;
@@ -648,11 +660,12 @@ const RELEASES = [
   ['4.3.3', 'Additional fixes'],
   ['4.3.4', 'Balance update feedback'],
   ['4.3.5', 'Generated with Zhipu AI credit'],
+  ['4.4.0', 'Bulk buy: open up to 500 packs at once'],
 ];
 const WHATS_NEW = [
-  'Added the <b>“Generated with Zhipu AI”</b> credit in the bottom-right corner',
-  'Both credits now sit on opposite corners and stay out of the way',
-  'No gameplay changes'
+  '<b>Bulk buy</b> — type how many packs you want (1–500) and open them all at once',
+  'Shows the total cost before you buy, plus a summary with rarity counts and your best pull',
+  'Exact coin maths, so big bulk purchases always deduct correctly'
 ];
 const INK = '#121a2c';
 
@@ -1990,6 +2003,46 @@ function buyPack(again){
     window.scrollTo({top:0, behavior:'smooth'});
   }
 }
+const BULK_MAX = 500;
+function buyBulk(p, n){
+  n = Math.max(1, Math.min(BULK_MAX, Math.floor(Number(n)) || 1));
+  const total = costBI(p.cost) * BigInt(n);
+  if (s.coins < total){
+    toast(`Need ${fmtCost(total - s.coins)} more coins`, 'bad');
+    sfx('error');
+    return;
+  }
+  s.coins -= total;
+  s.packsOpened += n;
+  const pulled = [];
+  for (let k = 0; k < n; k++){
+    for (let c = 0; c < p.pull; c++) pulled.push(drawCard(p));
+  }
+  s.cards.push(...pulled);
+  if (s.smart) smartEquip(pulled);
+  lastPurchase = {cost:total, balance:s.coins};
+  flashCoins();
+  toast(`− 🪙 ${fmtCost(total)} spent`, 'bad');
+  save();
+  render();
+  openBulkSummary(p, n, pulled, total);
+}
+function openBulkSummary(p, n, pulled, total){
+  const counts = [0,0,0,0,0];
+  pulled.forEach(c => counts[c.t]++);
+  let best = pulled[0];
+  pulled.forEach(c => { if (eff(c) > eff(best)) best = c; });
+  const rows = counts.map((v, i) => v ? `<div class="mut-preview"><span style="color:${RCOL[i]}">${RARITY[i]}</span><b>${v.toLocaleString()}</b></div>` : '').join('');
+  openModal(`<button class="x" data-close>✕</button>
+    <h3>Bulk open · ${packName(p)}</h3>
+    <p class="sub">${n.toLocaleString()} pack${n === 1 ? '' : 's'} opened · ${pulled.length.toLocaleString()} cards added.</p>
+    <div class="mut-preview"><span>Spent</span><b class="gold">− 🪙 ${fmtCost(total)}</b></div>
+    <div class="mut-preview"><span>Balance</span><b>🪙 ${fmt(s.coins)}</b></div>
+    ${rows}
+    <p class="hint" style="margin:8px 0 4px">Best pull</p>
+    <div style="width:min(180px,60%);margin:0 auto 8px">${cardHTML(best, {})}</div>
+    <button class="btn primary wide" data-close>Done</button>`);
+}
 function finishUpgrade(job){
   if (!job) return '';
   const c = byId(job.cardId);
@@ -2367,6 +2420,17 @@ function openPackModal(i){
     </div>
     <button class="btn primary wide" id="openPackBtn" ${afford ? '' : 'disabled'}>Open ${packName(p)} — ${fmtCost(p.cost)} coins</button>
     ${afford ? '' : `<p class="hint center" style="margin-top:6px">Need ${fmtCost(costBI(p.cost) - s.coins)} more coins.</p>`}
+    <div class="bulk">
+      <div class="bulk-top"><span>Bulk buy</span><span class="hint" style="margin:0">1–500 packs</span></div>
+      <div class="bulk-row">
+        <input id="bulkQty" type="number" min="1" max="500" step="1" value="5" inputmode="numeric" aria-label="How many packs">
+        <span class="bulk-x">×</span>
+        <span class="bulk-unit">${fmtCost(p.cost)}</span>
+        <b id="bulkCost" class="gold">${fmtCost(costBI(p.cost) * 5n)}</b>
+      </div>
+      <button class="btn ghost wide" id="bulkBtn">Buy <b id="bulkN">5</b> packs</button>
+      <p class="hint" id="bulkHint" style="margin:5px 0 0">Instantly opens the packs and shows a summary — no flip animation.</p>
+    </div>
     <p class="hint" style="margin-top:7px">Fast open skips the flip animation. Smart equip swaps in new cards when they beat your weakest equipped card.</p>`);
   const f = document.getElementById('fastSw');
   if (f) f.onchange = () => { s.fast = f.checked; save(); };
@@ -2374,6 +2438,33 @@ function openPackModal(i){
   if (sm) sm.onchange = () => { s.smart = sm.checked; save(); };
   const btn = document.getElementById('openPackBtn');
   if (btn) btn.onclick = () => { closeModal(); buyPack(); };
+  const qty = document.getElementById('bulkQty');
+  const bulkBtn = document.getElementById('bulkBtn');
+  const bulkCost = document.getElementById('bulkCost');
+  const bulkN = document.getElementById('bulkN');
+  const bulkHint = document.getElementById('bulkHint');
+  function refreshBulk(){
+    const raw = Math.floor(Number(qty.value));
+    const n = Math.max(1, Math.min(BULK_MAX, Number.isFinite(raw) ? raw : 1));
+    const total = costBI(p.cost) * BigInt(n);
+    const can = s.coins >= total;
+    bulkN.textContent = n.toLocaleString();
+    bulkCost.textContent = fmtCost(total);
+    bulkBtn.disabled = !can;
+    bulkHint.textContent = can
+      ? `Instantly opens ${n.toLocaleString()} pack${n === 1 ? '' : 's'} and shows a summary.`
+      : `Need ${fmtCost(total - s.coins)} more coins for ${n.toLocaleString()} packs.`;
+  }
+  if (qty){
+    qty.oninput = refreshBulk;
+    qty.onchange = () => { qty.value = Math.max(1, Math.min(BULK_MAX, Math.floor(Number(qty.value)) || 1)); refreshBulk(); };
+    refreshBulk();
+  }
+  if (bulkBtn) bulkBtn.onclick = () => {
+    const n = Math.max(1, Math.min(BULK_MAX, Math.floor(Number(qty.value)) || 1));
+    closeModal();
+    buyBulk(p, n);
+  };
 }
 
 /* =========================================================
