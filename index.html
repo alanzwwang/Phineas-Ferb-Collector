@@ -470,7 +470,12 @@ body.opening .stats{margin:7px 0 3px}
   background:rgba(6,14,24,.72);border:1px solid rgba(84,232,206,.22);color:#a9c6d6;font-size:8.5px;
   line-height:1.35;letter-spacing:.01em;backdrop-filter:blur(4px)}
 #credit a{color:#9df5e0;text-decoration:underline;text-underline-offset:2px;pointer-events:auto}
-@media (max-width:520px){#credit{font-size:7.5px;max-width:88vw}}
+#creditAi{position:fixed;right:8px;bottom:6px;z-index:60;padding:4px 8px;border-radius:7px;
+  background:rgba(6,14,24,.72);border:1px solid rgba(255,209,102,.28);color:#ffe3a8;font-size:8.5px;
+  line-height:1.35;letter-spacing:.02em;pointer-events:none;backdrop-filter:blur(4px)}
+@media (max-width:520px){#creditAi{font-size:7.5px}}
+@media (max-width:640px){#credit{font-size:7.5px;max-width:52vw}}
+@media (max-width:520px){#credit{font-size:7px;max-width:50vw}}
 #coins.spend{animation:coinSpend .55s ease}
 @keyframes coinSpend{0%{color:#ff8a8a;transform:scale(1.06)}100%{color:inherit;transform:scale(1)}}
 .foot .linkish{background:none;border:0;padding:0;font-size:9px;color:#8194b8;text-decoration:underline;text-underline-offset:2px}
@@ -585,6 +590,7 @@ body.opening .stats{margin:7px 0 3px}
     <div style="margin-top:3px"><button class="linkish" id="resetBtn">Reset save</button></div>
   </footer>
   <div id="credit">idea from Huga Aiba, visit his website at: <a href="https://sweet-taffy-2e2425.netlify.app" target="_blank" rel="noopener">sweet-taffy-2e2425.netlify.app</a></div>
+  <div id="creditAi">Generated with Zhipu AI</div>
 </div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="modal" class="modal" aria-hidden="true"></div>
@@ -603,7 +609,7 @@ const MAX_EQ = 5;
 const KEY = 'pf_summer_collector_v2';
 /* release version + what this build adds (bump both on every update)
    every release uses a three-part number: major.feature.patch */
-const VERSION = '4.3.4';
+const VERSION = '4.3.5';
 /* ADMIN ABUSE event: ended in 4.1.1 — production is back to 1x */
 const CARD_RATE_CAP = 5e18; // 5 quintillion coins/sec per card
 const BOOST_MULT = 3;
@@ -641,11 +647,12 @@ const RELEASES = [
   ['4.3.2', 'Bug fixes'],
   ['4.3.3', 'Additional fixes'],
   ['4.3.4', 'Balance update feedback'],
+  ['4.3.5', 'Generated with Zhipu AI credit'],
 ];
 const WHATS_NEW = [
-  '<b>Bug fixes</b> — pack purchases now always deduct from your balance and stay deducted after reloads',
-  'Every purchase shows a <b>− coins spent</b> confirmation and the new balance in the summary',
-  'Hover the balance to see the exact full amount'
+  'Added the <b>“Generated with Zhipu AI”</b> credit in the bottom-right corner',
+  'Both credits now sit on opposite corners and stay out of the way',
+  'No gameplay changes'
 ];
 const INK = '#121a2c';
 
